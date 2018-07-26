@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:svgMakerCore="clr-namespace:SvgMakerCore"
-        xmlns:control="clr-namespace:SvgMakerCore.Control"
+        xmlns:controls="clr-namespace:SvgMakerCore.Controls"
         Title="SvgMaker"
         Width="1024"
         Height="768"
@@ -15,6 +15,28 @@
             <Setter Property="HorizontalAlignment" Value="Right"/>
             <Setter Property="Width" Value="150"/>
         </Style>
+
+        <DataTemplate DataType="{x:Type svgMakerCore:Bezier2DVm}">
+            <Grid>
+                <Path Stroke="Black" Data="{Binding Geometry}" StrokeThickness="1"/>
+                <ItemsControl ItemsSource="{Binding Points}" 
+                                  Visibility="{Binding IsSelected , 
+                                                       RelativeSource={RelativeSource FindAncestor , AncestorType=ListViewItem},
+                                                       Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type Point}">
+                            <controls:MoveablePoint X="{Binding X , Mode=TwoWay}"
+                                                        Y="{Binding Y , Mode=TwoWay}"
+                                                        Minimum="0,0"
+                                                        Maximum="512,512"
+                                                        Size="4"
+                                                        GridSnap="{Binding DataContext.GridSize , RelativeSource={RelativeSource FindAncestor , AncestorType=Window}}"
+                                                        Foreground="Red"/>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+        </DataTemplate>
     </Window.Resources>
 
     <Window.DataContext>
@@ -33,20 +55,28 @@
                 <Border.LayoutTransform>
                     <ScaleTransform ScaleX="{Binding Scale}" ScaleY="{Binding Scale}" CenterX="128" CenterY="0"/>
                 </Border.LayoutTransform>
-                <control:GridCanvas 
-                    GridInterval="{Binding GridSize}" 
-                    IsDash="{Binding IsDash}" 
-                    IsDrawGrid="True" 
-                    DashA="{Binding DashLineSize}"
-                    DashB="{Binding DashWhiteSpaceSize}"
-                    GridBrush="YellowGreen"/>
+
+                <ItemsControl ItemsSource="{Binding ItemsSource}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <controls:GridCanvas 
+                                GridInterval="{Binding GridSize}" 
+                                IsDash="{Binding IsDash}" 
+                                IsDrawGrid="True" 
+                                DashA="{Binding DashLineSize}"
+                                DashB="{Binding DashWhiteSpaceSize}"
+                                GridBrush="YellowGreen"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                </ItemsControl>
+
             </Border>
         </ScrollViewer>
         
-        <Border Grid.Column="1" Width="1" Background="LightGray" Margin="2"></Border>
+        <Border Grid.Column="1" Width="1" Background="LightGray" Margin="2"/>
 
         <StackPanel Grid.Column="2">
-
             <GroupBox Header="キャンバス設定">
                 <StackPanel>
                     <WrapPanel Margin="2" HorizontalAlignment="Right">
@@ -75,10 +105,8 @@
                 <StackPanel Margin="1">
                     <TextBlock Text="実線の距離" />
                     <Slider Value="{Binding DashLineSize}" Minimum="2" Maximum="20" Style="{StaticResource RightControlStyle}"/>
-
                     <TextBlock Text="空白の距離"/>
                     <Slider Value="{Binding DashWhiteSpaceSize}" Minimum="2" Maximum="20" Style="{StaticResource RightControlStyle}"/>
-
                 </StackPanel>
             </GroupBox>
 

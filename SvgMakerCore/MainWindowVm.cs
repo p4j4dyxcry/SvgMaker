@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.ObjectModel;
+using System.Windows;
 using System.Windows.Input;
+using SvgMakerCore.Geometry2D;
 using SvgMakerCore.Wpf;
 
 namespace SvgMakerCore
@@ -83,5 +86,26 @@ namespace SvgMakerCore
             CanvasWidth = DumyWidth;
             CanvasHeight = DumyHeight;
         });
+
+        public ObservableCollection<Bezier2DVm> ItemsSource { get; set; } = new ObservableCollection<Bezier2DVm>();
+
+        public MainWindowVm()
+        {
+            ItemsSource.Add(
+                new Bezier2DVm(
+                    new Bezier2D(
+                        new Point(0,0   ),
+                        new Point(100, 0),
+                        new Point(200, 0),
+                        new Point(300,0 ) )));
+
+            ItemsSource.Add(
+                new Bezier2DVm(
+                    new Bezier2D(
+                        new Point(0,   50),
+                        new Point(100, 100),
+                        new Point(200, 100),
+                        new Point(300, 50))));
+        }
     }
 }

@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using SvgMakerCore.Wpf;
 
-namespace SvgMakerCore.Control
+namespace SvgMakerCore.Controls
 {
     /// <summary>
     /// グリッド線付キャンバス
