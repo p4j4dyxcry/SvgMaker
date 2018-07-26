@@ -10,14 +10,9 @@ namespace SvgMakerCore
     {
         private Bezier2D Model { get; }
 
-        public Geometry Geometry => Geometry.Parse(ToString());
+        public Geometry Geometry => Geometry.Parse($"M {Model.A} C {Model.B} {Model.C} {Model.D}");
 
         public Point2DVm[] Points { get; }
-
-        public override string ToString()
-        {
-            return $"M {Model.A} C {Model.B} {Model.C} {Model.D}";
-        }
 
         public Bezier2DVm( Bezier2D model)
         {
