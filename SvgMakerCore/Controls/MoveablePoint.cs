@@ -12,7 +12,7 @@ namespace SvgMakerCore.Controls
     public class MoveablePoint : Thumb
     {
         public static readonly DependencyProperty XProperty = DependencyProperty.Register(
-            "X", typeof(double), typeof(MoveablePoint), new PropertyMetadata(default(double), OnDependencyPropertyChanged));
+            nameof(X), typeof(double), typeof(MoveablePoint), new PropertyMetadata(default(double), OnDependencyPropertyChanged));
 
         public double X
         {
@@ -21,7 +21,7 @@ namespace SvgMakerCore.Controls
         }
 
         public static readonly DependencyProperty YProperty = DependencyProperty.Register(
-            "Y", typeof(double), typeof(MoveablePoint), new PropertyMetadata(default(double), OnDependencyPropertyChanged));
+            nameof(Y), typeof(double), typeof(MoveablePoint), new PropertyMetadata(default(double), OnDependencyPropertyChanged));
 
         public double Y
         {
@@ -30,7 +30,7 @@ namespace SvgMakerCore.Controls
         }
 
         public static readonly DependencyProperty SizeProperty = DependencyProperty.Register(
-            "Size", typeof(double), typeof(MoveablePoint), new PropertyMetadata(default(double), OnDependencyPropertyChanged));
+            nameof(Size), typeof(double), typeof(MoveablePoint), new PropertyMetadata(2D, OnDependencyPropertyChanged));
 
         public double Size
         {
@@ -39,7 +39,7 @@ namespace SvgMakerCore.Controls
         }
 
         public static readonly DependencyProperty MinimumProperty = DependencyProperty.Register(
-            "Minimum", typeof(Point), typeof(MoveablePoint), new PropertyMetadata(default(Point)));
+            nameof(Minimum), typeof(Point), typeof(MoveablePoint), new PropertyMetadata(default(Point)));
 
         public Point Minimum
         {
@@ -48,7 +48,7 @@ namespace SvgMakerCore.Controls
         }
 
         public static readonly DependencyProperty MaximumProperty = DependencyProperty.Register(
-            "Maximum", typeof(Point), typeof(MoveablePoint), new PropertyMetadata(default(Point)));
+            nameof(Maximum), typeof(Point), typeof(MoveablePoint), new PropertyMetadata(default(Point)));
 
         public Point Maximum
         {
@@ -57,7 +57,7 @@ namespace SvgMakerCore.Controls
         }
 
         public static readonly DependencyProperty GridSnapProperty = DependencyProperty.Register(
-            "GridSnap", typeof(double), typeof(MoveablePoint), new PropertyMetadata(default(double)));
+            nameof(GridSnap), typeof(double), typeof(MoveablePoint), new PropertyMetadata(default(double)));
 
         public double GridSnap
         {
@@ -80,26 +80,29 @@ namespace SvgMakerCore.Controls
 
         protected override void OnRender(DrawingContext drawingContext)
         {
+            drawingContext.PushOpacity(0.125);
             drawingContext.DrawEllipse(Foreground,null,new Point(X,Y),Size,Size);
         }
 
         public MoveablePoint()
         {
-            var point = new Point();
+            var startPoint = new Point();
             DragStarted += (s, e) =>
             {
-                point = new Point(X,Y);
+                startPoint = new Point(X,Y);
             };
 
             DragDelta += (s, e) =>
             {
-                var gridDelta = (int) (GridSnap / 2);
+                const int subGrid = 2;
 
-                var x = (int)(point.X + e.HorizontalChange) + gridDelta / 2;
-                var y = (int)(point.Y + e.VerticalChange) + gridDelta / 2;
+                var gridDelta = (int)Math.Max( GridSnap / subGrid , subGrid );
 
-                X = Math.Max(Math.Min(gridDelta * (x / gridDelta), Maximum.X), Minimum.X);
-                Y = Math.Max(Math.Min(gridDelta * (y / gridDelta), Maximum.Y), Minimum.Y);
+                var x = (int)(startPoint.X + e.HorizontalChange) + gridDelta / subGrid;
+                var y = (int)(startPoint.Y + e.VerticalChange  ) + gridDelta / subGrid;
+
+                X = Math.Max(Math.Min( gridDelta * ( x / gridDelta), Maximum.X), Minimum.X);
+                Y = Math.Max(Math.Min( gridDelta * ( y / gridDelta), Maximum.Y), Minimum.Y);
             };
         }
     }

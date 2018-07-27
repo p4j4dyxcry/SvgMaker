@@ -24,4 +24,24 @@ namespace SvgMakerCore.Wpf
         public void OnCanExecuteChanged()
             => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
     }
+
+    public class ActionCommnd<T> : ICommand 
+    {
+        public bool CanExecute(object parameter)
+            => true;
+
+        public void Execute(object parameter)
+            => Action?.Invoke((T)parameter);
+
+        public event EventHandler CanExecuteChanged;
+
+        private Action<T> Action { get; }
+
+        public ActionCommnd(Action<T> action)
+            => Action = action;
+
+        public void OnCanExecuteChanged()
+            => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+    }
+
 }

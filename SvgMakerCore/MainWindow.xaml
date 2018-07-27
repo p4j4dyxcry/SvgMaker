@@ -15,26 +15,38 @@
             <Setter Property="HorizontalAlignment" Value="Right"/>
             <Setter Property="Width" Value="150"/>
         </Style>
+        
+        <Style TargetType="ItemsControl" x:Key="PointsListStyle">
+            <Setter Property="Visibility" Value="{Binding IsSelected , 
+                                                          RelativeSource={RelativeSource FindAncestor , AncestorType=ListViewItem},
+                                                          Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <Setter Property="ItemTemplate">
+                <Setter.Value>
+                    <DataTemplate DataType="{x:Type Point}">
+                        <controls:MoveablePoint X="{Binding X , Mode=TwoWay}"
+                                                Y="{Binding Y , Mode=TwoWay}"
+                                                Minimum="0,0"
+                                                Maximum="512,512"
+                                                Size="8"
+                                                GridSnap="{Binding DataContext.GridSize , RelativeSource={RelativeSource FindAncestor , AncestorType=Window}}"
+                                                Foreground="Red"/>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-        <DataTemplate DataType="{x:Type svgMakerCore:Bezier2DVm}">
+        <DataTemplate DataType="{x:Type svgMakerCore:Geometry2DVm}">
             <Grid>
                 <Path Stroke="Black" Data="{Binding Geometry}" StrokeThickness="1"/>
-                <ItemsControl ItemsSource="{Binding Points}" 
-                                  Visibility="{Binding IsSelected , 
-                                                       RelativeSource={RelativeSource FindAncestor , AncestorType=ListViewItem},
-                                                       Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate DataType="{x:Type Point}">
-                            <controls:MoveablePoint X="{Binding X , Mode=TwoWay}"
-                                                        Y="{Binding Y , Mode=TwoWay}"
-                                                        Minimum="0,0"
-                                                        Maximum="512,512"
-                                                        Size="4"
-                                                        GridSnap="{Binding DataContext.GridSize , RelativeSource={RelativeSource FindAncestor , AncestorType=Window}}"
-                                                        Foreground="Red"/>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                <controls:MoveablePoint DataContext="{Binding Center}"
+                                        X="{Binding X , Mode=TwoWay}"
+                                        Y="{Binding Y , Mode=TwoWay}"
+                                        Minimum="0,0"
+                                        Maximum="512,512"
+                                        Size="12"
+                                        GridSnap="{Binding DataContext.GridSize , RelativeSource={RelativeSource FindAncestor , AncestorType=Window}}"
+                                        Foreground="Blue"/>
+                <ItemsControl ItemsSource="{Binding Points}" Style="{StaticResource PointsListStyle}"/>
             </Grid>
         </DataTemplate>
     </Window.Resources>
@@ -76,6 +88,7 @@
         
         <Border Grid.Column="1" Width="1" Background="LightGray" Margin="2"/>
 
+        <!-- Property Panel -->
         <StackPanel Grid.Column="2">
             <GroupBox Header="キャンバス設定">
                 <StackPanel>
@@ -97,7 +110,7 @@
                     <Slider Minimum="5" Maximum="50" Value="{Binding GridSize}" Style="{StaticResource RightControlStyle}"/>
                 </StackPanel>
             </GroupBox>
-            
+
             <Separator/>
 
             <CheckBox IsChecked="{Binding IsDash}" Content="破線(重め)"/>
@@ -109,8 +122,6 @@
                     <Slider Value="{Binding DashWhiteSpaceSize}" Minimum="2" Maximum="20" Style="{StaticResource RightControlStyle}"/>
                 </StackPanel>
             </GroupBox>
-
         </StackPanel>
-
     </Grid>
 </Window>

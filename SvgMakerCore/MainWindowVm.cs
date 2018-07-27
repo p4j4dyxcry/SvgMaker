@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using SvgMakerCore.Geometry2D;
@@ -87,25 +88,84 @@ namespace SvgMakerCore
             CanvasHeight = DumyHeight;
         });
 
-        public ObservableCollection<Bezier2DVm> ItemsSource { get; set; } = new ObservableCollection<Bezier2DVm>();
+        public ObservableCollection<Geometry2DVm> ItemsSource { get; set; } = new ObservableCollection<Geometry2DVm>();
+
+        public ICommand AddGeometryCommand => new ActionCommnd<AddGeometryEventArg>((e) =>
+        {
+            var factory = new GeometryFactory();
+            ItemsSource.Add(new Geometry2DVm(factory.Create(e)));
+        });
 
         public MainWindowVm()
         {
-            ItemsSource.Add(
-                new Bezier2DVm(
-                    new Bezier2D(
-                        new Point(0,0   ),
-                        new Point(100, 0),
-                        new Point(200, 0),
-                        new Point(300,0 ) )));
+            AddGeometryCommand.Execute(new AddGeometryEventArg()
+            {
+                Type = GeometryType.Bezier,
+                Points = new []
+                {
+                    new Point(0,   0),
+                    new Point(150, 50),
+                    new Point(300, 0) 
+                }
+            });
 
-            ItemsSource.Add(
-                new Bezier2DVm(
-                    new Bezier2D(
-                        new Point(0,   50),
-                        new Point(100, 100),
-                        new Point(200, 100),
-                        new Point(300, 50))));
+            AddGeometryCommand.Execute(new AddGeometryEventArg()
+            {
+                Type = GeometryType.Bezier,
+                Points = new[]
+                {
+                    new Point(0,   50 ),
+                    new Point(100, 100),
+                    new Point(200, 100),
+                    new Point(300, 50 )
+                }
+            });
+
+            AddGeometryCommand.Execute(new AddGeometryEventArg()
+            {
+                Type = GeometryType.Bezier,
+                Points = new[]
+                {
+                    new Point(0  , 100),
+                    new Point(50 , 150),
+                    new Point(100, 150),
+                    new Point(100, 200),
+                    new Point(150, 200)
+                }
+            });
+
+            AddGeometryCommand.Execute(new AddGeometryEventArg()
+            {
+                Type = GeometryType.Circle,
+                Points = new[]
+                {
+                    new Point(200, 200),
+                    new Point(200, 250),
+                },
+            });
+
+            AddGeometryCommand.Execute(new AddGeometryEventArg()
+            {
+                Type = GeometryType.Line,
+                Points = new[]
+                {
+                    new Point(0  , 300),
+                    new Point(250, 300),
+                }
+            });
+
+            AddGeometryCommand.Execute(new AddGeometryEventArg()
+            {
+                Type = GeometryType.Arc,
+                Points = new[]
+                {
+                    new Point(350, 350),
+                    new Point(450, 350),
+                },
+            });
+
+
+            //new SvgSaver("f:\\test.xml",ItemsSource.Select(x=>x.Model).ToArray(),(int)CanvasWidth, (int)CanvasHeight);
         }
     }
 }

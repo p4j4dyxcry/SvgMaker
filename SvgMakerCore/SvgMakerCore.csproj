@@ -55,14 +55,20 @@
     </ApplicationDefinition>
     <Compile Include="Controls\MoveablePoint.cs" />
     <Compile Include="Controls\PointsDrawer.cs" />
-    <Compile Include="Geometry2D\Bezier2D.cs" />
-    <Compile Include="Bezier2DVm.cs" />
+    <Compile Include="Events.cs" />
+    <Compile Include="Geometry2D\Arc.cs" />
+    <Compile Include="Geometry2D\Bezier.cs" />
+    <Compile Include="Geometry2DVm.cs" />
+    <Compile Include="Geometry2D\Circle.cs" />
     <Compile Include="Geometry2D\Constans.cs" />
     <Compile Include="Geometry2D\Geometry2D.cs" />
+    <Compile Include="Geometry2D\GeometryFactory.cs" />
     <Compile Include="Geometry2D\Line2D.cs" />
     <Compile Include="Geometry2D\Utility.cs" />
     <Compile Include="MainWindowVm.cs" />
     <Compile Include="Point2DVm.cs" />
+    <Compile Include="SvgSaver.cs" />
+    <Compile Include="User.cs" />
     <Compile Include="Wpf\ActionCommand.cs" />
     <Compile Include="Wpf\NotifyPropertyChanger.cs" />
     <Compile Include="Wpf\WpfEx.cs" />
@@ -109,6 +115,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="YamlDotNet">
+      <Version>5.0.1</Version>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

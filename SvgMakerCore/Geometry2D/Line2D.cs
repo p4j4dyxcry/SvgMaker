@@ -4,26 +4,28 @@ namespace SvgMakerCore.Geometry2D
 {
     public class Line2D : Geometry2D
     {
-        public Point A
+        public Point Start
         {
             get => this[0];
             set => this[0] = value;
         }
-        public Point B
+        public Point End
         {
-            get => this[1];
-            set => this[1] = value;
+            get => this[Length - 1];
+            set => this[Length - 1] = value;
         }
 
         public Line2D():base(2)
         {
-
+            MarkupCommand = "L";
         }
 
-        public Line2D(Point a, Point b) : this()
+        public Line2D(Point[] points) : base(points.Length)
         {
-            A = a;
-            B = b;
+            MarkupCommand = "L";
+            for (int i = 0; i < Length; ++i)
+                this[i] = points[i];
+
         }
     }
 }
