@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
+using System.Windows;
 
 namespace SvgMakerCore.Geometry2D
 {
@@ -20,12 +21,11 @@ namespace SvgMakerCore.Geometry2D
             MarkupCommand = "L";
         }
 
-        public Line2D(Point[] points) : base(points.Length)
+        public Line2D(IReadOnlyList<Point> points) : base(points.Count)
         {
             MarkupCommand = "L";
             for (int i = 0; i < Length; ++i)
                 this[i] = points[i];
-
         }
     }
 }

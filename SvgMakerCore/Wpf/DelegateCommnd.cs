@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows.Input;
 
 namespace SvgMakerCore.Wpf
 {
-    public class ActionCommnd : ICommand
-    {
+    public class DelegateCommnd : ICommand
+    {        
         public bool CanExecute(object parameter)
-            => true;
+            => CanExecuteFunc?.Invoke() ?? true;
 
         public void Execute(object parameter)
             => Action?.Invoke();
@@ -18,17 +15,22 @@ namespace SvgMakerCore.Wpf
 
         private Action Action { get; }
 
-        public ActionCommnd(Action action)
+
+        public DelegateCommnd(Action action)
             => Action = action;
+
+        private Func<bool> CanExecuteFunc { get; }
+        public DelegateCommnd(Action action,Func<bool> canExecute):this(action)
+            => CanExecuteFunc = canExecute;
 
         public void OnCanExecuteChanged()
             => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    public class ActionCommnd<T> : ICommand 
+    public class DelegateCommnd<T> : ICommand 
     {
         public bool CanExecute(object parameter)
-            => true;
+            => CanExecuteFunc?.Invoke((T)parameter) ?? true;
 
         public void Execute(object parameter)
             => Action?.Invoke((T)parameter);
@@ -37,8 +39,12 @@ namespace SvgMakerCore.Wpf
 
         private Action<T> Action { get; }
 
-        public ActionCommnd(Action<T> action)
+        public DelegateCommnd(Action<T> action)
             => Action = action;
+
+        private Func<T, bool> CanExecuteFunc { get; }
+        public DelegateCommnd(Action<T> action, Func<T,bool> canExecute) : this(action)
+            => CanExecuteFunc = canExecute;
 
         public void OnCanExecuteChanged()
             => CanExecuteChanged?.Invoke(this, EventArgs.Empty);

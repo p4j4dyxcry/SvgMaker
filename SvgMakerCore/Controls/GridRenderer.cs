@@ -7,12 +7,12 @@ using SvgMakerCore.Wpf;
 namespace SvgMakerCore.Controls
 {
     /// <summary>
-    /// グリッド線付キャンバス
+    /// グリッド線レンダラ
     /// </summary>
-    public class GridCanvas : Canvas
+    public class GridRenderer : Control
     {
         public static readonly DependencyProperty IsDrawGridProperty = DependencyProperty.Register(
-            nameof(IsDrawGrid), typeof(bool), typeof(GridCanvas), new PropertyMetadata(true, OnDependencyPropertyChanged));
+            nameof(IsDrawGrid), typeof(bool), typeof(GridRenderer), new PropertyMetadata(true, OnDependencyPropertyChanged));
 
         public bool IsDrawGrid
         {
@@ -21,7 +21,7 @@ namespace SvgMakerCore.Controls
         }
 
         public static readonly DependencyProperty GridIntervalProperty = DependencyProperty.Register(
-            nameof(GridInterval), typeof(double), typeof(GridCanvas), new PropertyMetadata(21.0D, OnDependencyPropertyChanged));
+            nameof(GridInterval), typeof(double), typeof(GridRenderer), new PropertyMetadata(21.0D, OnDependencyPropertyChanged));
 
         public double GridInterval
         {
@@ -30,7 +30,7 @@ namespace SvgMakerCore.Controls
         }
 
         public static readonly DependencyProperty GridBrushProperty = DependencyProperty.Register(
-            nameof(GridBrush), typeof(Brush), typeof(GridCanvas), new PropertyMetadata(Brushes.Gray, OnDependencyPropertyChanged));
+            nameof(GridBrush), typeof(Brush), typeof(GridRenderer), new PropertyMetadata(Brushes.Gray, OnDependencyPropertyChanged));
 
         public Brush GridBrush
         {
@@ -39,7 +39,7 @@ namespace SvgMakerCore.Controls
         }
 
         public static readonly DependencyProperty GridThicknessProperty = DependencyProperty.Register(
-            nameof(GridThickness), typeof(double), typeof(GridCanvas), new PropertyMetadata(1D, OnDependencyPropertyChanged));
+            nameof(GridThickness), typeof(double), typeof(GridRenderer), new PropertyMetadata(1D, OnDependencyPropertyChanged));
 
         public double GridThickness
         {
@@ -49,7 +49,7 @@ namespace SvgMakerCore.Controls
 
 
         public static readonly DependencyProperty IsDashProperty = DependencyProperty.Register(
-            nameof(IsDash), typeof(bool), typeof(GridCanvas), new PropertyMetadata(true, OnDependencyPropertyChanged));
+            nameof(IsDash), typeof(bool), typeof(GridRenderer), new PropertyMetadata(true, OnDependencyPropertyChanged));
 
         public bool IsDash
         {
@@ -58,7 +58,7 @@ namespace SvgMakerCore.Controls
         }
 
         public static readonly DependencyProperty DashAProperty = DependencyProperty.Register(
-            nameof(DashA), typeof(double), typeof(GridCanvas), new PropertyMetadata(7D, OnDependencyPropertyChanged));
+            nameof(DashA), typeof(double), typeof(GridRenderer), new PropertyMetadata(7D, OnDependencyPropertyChanged));
 
         public double DashA
         {
@@ -67,7 +67,7 @@ namespace SvgMakerCore.Controls
         }
 
         public static readonly DependencyProperty DashBProperty = DependencyProperty.Register(
-            nameof(DashB), typeof(double), typeof(GridCanvas), new PropertyMetadata(7D, OnDependencyPropertyChanged));
+            nameof(DashB), typeof(double), typeof(GridRenderer), new PropertyMetadata(7D, OnDependencyPropertyChanged));
 
         public double DashB
         {
@@ -79,7 +79,7 @@ namespace SvgMakerCore.Controls
             DependencyObject dependencyObject, 
             DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
         {
-            if (dependencyObject is GridCanvas gridCanvas)
+            if (dependencyObject is GridRenderer gridCanvas)
             {
                 gridCanvas.MakePen();
                 gridCanvas.InvalidateVisual();

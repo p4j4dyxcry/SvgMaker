@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 
 namespace SvgMakerCore.Geometry2D
@@ -27,7 +28,7 @@ namespace SvgMakerCore.Geometry2D
             MarkupCommand = "Q";
         }
 
-        public Bezier(Point[] points) : base(points.Length)
+        public Bezier(IReadOnlyList<Point> points) : base(points.Count)
         {
             if (Length == 3)
                 MarkupCommand = "Q";

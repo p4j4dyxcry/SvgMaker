@@ -55,5 +55,7 @@ namespace SvgMakerCore.Geometry2D
         }
 
         public Point Center => new Point(this.Average(x=>x.X),this.Average(x=>x.Y));
+
+        public Point Origin => new Point(this.Min(x=>x.X),this.Min(x=>x.Y));
     }
 }

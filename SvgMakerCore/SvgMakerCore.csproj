@@ -53,6 +53,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Aabb2D.cs" />
+    <Compile Include="Controls\AabbDrawer.cs" />
+    <Compile Include="Controls\GeometryCanvas.cs" />
+    <Compile Include="Controls\GeometryItem.cs" />
+    <Compile Include="Controls\ISelectable.cs" />
     <Compile Include="Controls\MoveablePoint.cs" />
     <Compile Include="Controls\PointsDrawer.cs" />
     <Compile Include="Events.cs" />
@@ -65,13 +70,27 @@
     <Compile Include="Geometry2D\GeometryFactory.cs" />
     <Compile Include="Geometry2D\Line2D.cs" />
     <Compile Include="Geometry2D\Utility.cs" />
+    <Compile Include="IPoint2D.cs" />
     <Compile Include="MainWindowVm.cs" />
     <Compile Include="Point2DVm.cs" />
+    <Compile Include="Wpf\PropertyChangeOperation.cs" />
     <Compile Include="SvgSaver.cs" />
     <Compile Include="User.cs" />
-    <Compile Include="Wpf\ActionCommand.cs" />
+    <Compile Include="Utility\OperationManagerEx.cs" />
+    <Compile Include="Wpf\DelegateCommnd.cs" />
+    <Compile Include="Wpf\CapacityStack.cs" />
+    <Compile Include="Wpf\DelegeteOperation.cs" />
+    <Compile Include="Wpf\CompositeOperation.cs" />
+    <Compile Include="Wpf\IOperation.cs" />
+    <Compile Include="Wpf\OperationManager.cs" />
     <Compile Include="Wpf\NotifyPropertyChanger.cs" />
+    <Compile Include="Wpf\UndoStack.cs" />
+    <Compile Include="Wpf\VisualTreeUtil.cs" />
     <Compile Include="Wpf\WpfEx.cs" />
+    <Page Include="Controls\GeometryStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -80,7 +99,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Controls\GridCanvas.cs" />
+    <Compile Include="Controls\GridRenderer.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -121,5 +140,6 @@
       <Version>5.0.1</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

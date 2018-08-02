@@ -1,9 +1,5 @@
-﻿using System.Windows;
-using System.Windows.Controls.Primitives;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Shapes;
-using SvgMakerCore.Controls;
+﻿using System.Diagnostics;
+using SvgMakerCore.Wpf;
 
 namespace SvgMakerCore
 {

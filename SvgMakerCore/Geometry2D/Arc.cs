@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 
 namespace SvgMakerCore.Geometry2D
 {
@@ -20,7 +19,7 @@ namespace SvgMakerCore.Geometry2D
         {
             MarkupCommand = "A 1,1 0 0 0";
             A = start;
-            B   = end;           
+            B = end;           
         }
     }
 }

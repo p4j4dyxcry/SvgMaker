@@ -4,7 +4,7 @@ using SvgMakerCore.Wpf;
 
 namespace SvgMakerCore
 {
-    public class Point2DVm : NotifyPropertyChanger
+    public class Point2DVm : NotifyPropertyChanger , IPoint2D
     {
         private Point _model;
         public Point Model => _model;
@@ -14,7 +14,7 @@ namespace SvgMakerCore
             get => _model.X;
             set
             {
-                if (Utility.Tolerance(_model.X, value))
+                if (Geometry2D.Utility.Tolerance(_model.X, value))
                 {
                     _model.X = value;
                     OnPropertyChanged();
@@ -27,7 +27,7 @@ namespace SvgMakerCore
             get => _model.Y;
             set
             {
-                if (Utility.Tolerance(_model.Y, value))
+                if (Geometry2D.Utility.Tolerance(_model.Y, value))
                 {
                     _model.Y = value;
                     OnPropertyChanged();
