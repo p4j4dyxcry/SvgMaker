@@ -35,6 +35,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Remoting" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -60,6 +61,13 @@
     <Compile Include="Controls\ISelectable.cs" />
     <Compile Include="Controls\MoveablePoint.cs" />
     <Compile Include="Controls\PointsDrawer.cs" />
+    <Compile Include="Core\AsyncProperty.cs" />
+    <Compile Include="Core\Ipc\IpcClient.cs" />
+    <Compile Include="Core\Ipc\IpcServer.cs" />
+    <Compile Include="Core\Reflection\FastReflection.cs" />
+    <Compile Include="Core\Reflection\PropertyAccesser.cs" />
+    <Compile Include="Core\Ipc\RemoteEvent.cs" />
+    <Compile Include="Core\StaTask.cs" />
     <Compile Include="Events.cs" />
     <Compile Include="Geometry2D\Arc.cs" />
     <Compile Include="Geometry2D\Bezier.cs" />
@@ -72,21 +80,24 @@
     <Compile Include="Geometry2D\Utility.cs" />
     <Compile Include="IPoint2D.cs" />
     <Compile Include="MainWindowVm.cs" />
+    <Compile Include="Operatable.cs" />
     <Compile Include="Point2DVm.cs" />
-    <Compile Include="Wpf\PropertyChangeOperation.cs" />
+    <Compile Include="Core\Operation\KeyOperationMergeJudger.cs" />
+    <Compile Include="Core\Operation\IOperationMergeJudger.cs" />
+    <Compile Include="Core\Operation\PropertyChangeOperation.cs" />
     <Compile Include="SvgSaver.cs" />
     <Compile Include="User.cs" />
-    <Compile Include="Utility\OperationManagerEx.cs" />
-    <Compile Include="Wpf\DelegateCommnd.cs" />
-    <Compile Include="Wpf\CapacityStack.cs" />
-    <Compile Include="Wpf\DelegeteOperation.cs" />
-    <Compile Include="Wpf\CompositeOperation.cs" />
-    <Compile Include="Wpf\IOperation.cs" />
-    <Compile Include="Wpf\OperationManager.cs" />
-    <Compile Include="Wpf\NotifyPropertyChanger.cs" />
-    <Compile Include="Wpf\UndoStack.cs" />
-    <Compile Include="Wpf\VisualTreeUtil.cs" />
-    <Compile Include="Wpf\WpfEx.cs" />
+    <Compile Include="Utility\OperationEx.cs" />
+    <Compile Include="Core\Operation\DelegateCommnd.cs" />
+    <Compile Include="Core\Operation\CapacityStack.cs" />
+    <Compile Include="Core\Operation\DelegeteOperation.cs" />
+    <Compile Include="Core\Operation\CompositeOperation.cs" />
+    <Compile Include="Core\Operation\IOperation.cs" />
+    <Compile Include="Core\Operation\OperationManager.cs" />
+    <Compile Include="Core\NotifyPropertyChanger.cs" />
+    <Compile Include="Core\Operation\UndoStack.cs" />
+    <Compile Include="Utility\VisualTreeUtil.cs" />
+    <Compile Include="Utility\FreezableEx.cs" />
     <Page Include="Controls\GeometryStyles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -1,6 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 
-namespace SvgMakerCore.Wpf
+namespace SvgMakerCore.Core.Operation
 {
     public class DelegeteOperation : IOperation
     {
@@ -9,8 +10,10 @@ namespace SvgMakerCore.Wpf
 
         public DelegeteOperation( Action execute , Action rollback)
         {
+            Debug.Assert(execute != null);
+            Debug.Assert(rollback != null);
             _execute = execute;
-            _rollback = rollback;
+            _rollback = rollback;            
         }
 
         public void Execute()

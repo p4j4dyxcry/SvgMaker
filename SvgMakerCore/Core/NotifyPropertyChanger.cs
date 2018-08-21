@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace SvgMakerCore.Wpf
+namespace SvgMakerCore.Core
 {
     public class NotifyPropertyChanger : INotifyPropertyChanged
     {

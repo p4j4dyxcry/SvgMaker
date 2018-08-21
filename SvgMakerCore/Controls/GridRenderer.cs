@@ -2,14 +2,15 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using SvgMakerCore.Wpf;
+using System.Windows.Shapes;
+using SvgMakerCore.Utility;
 
 namespace SvgMakerCore.Controls
 {
     /// <summary>
     /// グリッド線レンダラ
     /// </summary>
-    public class GridRenderer : Control
+    public class GridRenderer : Canvas
     {
         public static readonly DependencyProperty IsDrawGridProperty = DependencyProperty.Register(
             nameof(IsDrawGrid), typeof(bool), typeof(GridRenderer), new PropertyMetadata(true, OnDependencyPropertyChanged));
@@ -39,14 +40,13 @@ namespace SvgMakerCore.Controls
         }
 
         public static readonly DependencyProperty GridThicknessProperty = DependencyProperty.Register(
-            nameof(GridThickness), typeof(double), typeof(GridRenderer), new PropertyMetadata(1D, OnDependencyPropertyChanged));
+            nameof(GridThickness), typeof(double), typeof(GridRenderer), new PropertyMetadata(0.1D, OnDependencyPropertyChanged));
 
         public double GridThickness
         {
             get => (double) GetValue(GridThicknessProperty);
             set => SetValue(GridThicknessProperty, value);
         }
-
 
         public static readonly DependencyProperty IsDashProperty = DependencyProperty.Register(
             nameof(IsDash), typeof(bool), typeof(GridRenderer), new PropertyMetadata(true, OnDependencyPropertyChanged));
@@ -80,51 +80,56 @@ namespace SvgMakerCore.Controls
             DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
         {
             if (dependencyObject is GridRenderer gridCanvas)
-            {
                 gridCanvas.MakePen();
-                gridCanvas.InvalidateVisual();
-            }
         }
 
         private Pen _pen;
         private void MakePen()
         {
+            var width = double.IsNaN(Width)   ? ActualWidth  : Width;
+            var height = double.IsNaN(Height) ? ActualHeight : Height;
+
+            if (width <= 0 || height <= 0)
+                return;
+
+
+            var szX = GridInterval / (width);
+            var szY = GridInterval / (height);
+
             if (IsDash)
             {
                 var dashStyle = new DashStyle(new[] { DashA, DashB }, 0).DoFreeze();
-                _pen = new Pen(GridBrush, GridThickness) { DashStyle = dashStyle }.DoFreeze();
+                _pen = new Pen(GridBrush, 0.1) { DashStyle = dashStyle }.DoFreeze();
             }
             else
             {
-                _pen = new Pen(GridBrush, GridThickness).DoFreeze();
+                _pen = new Pen(GridBrush, 0.1).DoFreeze();
             }
+
+            var geometry = new GeometryGroup();
+            geometry.Children.Add(new LineGeometry(new Point(0, 0), new Point(1, 0)).DoFreeze());
+            geometry.Children.Add(new LineGeometry(new Point(0, 0), new Point(0, 1)).DoFreeze());
+            geometry.DoFreeze();
+
+
+            var drawingBrush = new DrawingBrush()
+            {
+                TileMode = TileMode.Tile,
+                ViewboxUnits = BrushMappingMode.Absolute,
+                Viewport = new Rect(0,0, szX, szY),
+                Drawing = new GeometryDrawing()
+                {
+                    Pen = _pen,
+                    Geometry = geometry,
+                }.DoFreeze()
+            }.DoFreeze();
+
+            Background = drawingBrush;
         }
 
-        protected override void OnRender(DrawingContext dc)
+        public GridRenderer()
         {
-            if (IsDrawGrid is false)
-            {
-                base.OnRender(dc);
-                return;                
-            }
-
-            if(_pen is null)
-                MakePen();
-
-            const int minLineInterval = 1;
-
-            var safeLineSize = (int)Math.Max(GridInterval, minLineInterval);
-            var width  = double.IsNaN(Width)  ? ActualWidth  : Width;
-            var height = double.IsNaN(Height) ? ActualHeight : Height;
-            for (var x = safeLineSize; x < width; x += safeLineSize)
-            {
-                for (var y = safeLineSize; y < height; y += safeLineSize)
-                {
-                   dc.DrawLine(_pen, new Point(x, 0), new Point(x, height));
-                   dc.DrawLine(_pen, new Point(0, y), new Point(width, y));
-                }
-            }
-            base.OnRender(dc);
+            SizeChanged += (s, e) => MakePen();
         }
     }
 }

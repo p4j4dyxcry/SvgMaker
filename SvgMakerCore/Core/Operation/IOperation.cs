@@ -1,4 +1,4 @@
-﻿namespace SvgMakerCore.Wpf
+﻿namespace SvgMakerCore.Core.Operation
 {
     public interface IOperation
     {

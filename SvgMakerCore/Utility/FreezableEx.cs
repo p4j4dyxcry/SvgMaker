@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace SvgMakerCore.Wpf
+namespace SvgMakerCore.Utility
 {
     public static class FreezableEx
     {

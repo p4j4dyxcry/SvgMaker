@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace SvgMakerCore.Wpf
+namespace SvgMakerCore.Core.Operation
 {
     public class DelegateCommnd : ICommand
     {        

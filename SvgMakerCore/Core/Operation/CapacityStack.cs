@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SvgMakerCore.Wpf
+namespace SvgMakerCore.Core.Operation
 {
     public class CapacityStack<T> : IEnumerable<T>
     {

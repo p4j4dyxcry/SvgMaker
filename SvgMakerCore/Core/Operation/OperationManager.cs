@@ -1,13 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 
-namespace SvgMakerCore.Wpf
+namespace SvgMakerCore.Core.Operation
 {
-    public class OperationManager : NotifyPropertyChanger , IEnumerable<IOperation>
+    public class OperationManager : INotifyPropertyChanged , IEnumerable<IOperation>
     {
         private readonly UndoStack<IOperation> _undoStack;
-
         public bool CanUndo => _undoStack.CanUndo;
         public bool CanRedo => _undoStack.CanRedo;
 
@@ -18,22 +18,22 @@ namespace SvgMakerCore.Wpf
 
         public void Undo()
         {
-            if (CanUndo)
-            {
-                PreStackChanged();
-                _undoStack.Undo().Rollback();
-                OnStackChanged();
-            }
+            if (!CanUndo)
+                return;
+
+            PreStackChanged();
+            _undoStack.Undo().Rollback();
+            OnStackChanged();
         }
 
         public void Redo()
         {
-            if (CanRedo)
-            {
-                PreStackChanged();
-                _undoStack.Redo().Execute();
-                OnStackChanged();
-            }
+            if (!CanRedo)
+                return;
+
+            PreStackChanged();
+            _undoStack.Redo().Execute();
+            OnStackChanged();
         }
 
         public IOperation Push(IOperation operation)
@@ -63,29 +63,7 @@ namespace SvgMakerCore.Wpf
             Push(operation).Execute();
         }
 
-        private bool _prevCanRedo;
-        private bool _prevCanUndo;
-        private int _preStackChangedCall = 0;
-        private void PreStackChanged()
-        {
-            Debug.Assert(_preStackChangedCall == 0);
-            _preStackChangedCall++;
-            _prevCanRedo = CanRedo;
-            _prevCanUndo = CanUndo;
-        }
-
-        private void OnStackChanged()
-        {
-            Debug.Assert(_preStackChangedCall == 1);
-            _preStackChangedCall--;
-            if (_prevCanUndo != CanUndo)
-                OnPropertyChanged(nameof(CanUndo));
-
-            if (_prevCanRedo != CanRedo)
-              OnPropertyChanged(nameof(CanRedo));
-
-            OnPropertyChanged(nameof(OperationManager));
-        }
+        #region Enumrable
 
         public IEnumerator<IOperation> GetEnumerator()
         {
@@ -96,5 +74,39 @@ namespace SvgMakerCore.Wpf
         {
             return GetEnumerator();
         }
+
+        #endregion
+
+        #region PropertyChanged
+
+        private bool _prevCanRedo;
+        private bool _prevCanUndo;
+        private int _preStackChangedCall;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void PreStackChanged()
+        {
+            Debug.Assert(_preStackChangedCall == 0 , "不正な呼び出し" );
+            _preStackChangedCall++;
+            _prevCanRedo = CanRedo;
+            _prevCanUndo = CanUndo;
+        }
+
+        private void OnStackChanged()
+        {
+            Debug.Assert(_preStackChangedCall == 1, "不正な呼び出し");
+            _preStackChangedCall--;
+            if (_prevCanUndo != CanUndo)
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CanUndo)));
+
+            if (_prevCanRedo != CanRedo)
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CanRedo)));
+
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(OperationManager)));
+        }
+
+
+        #endregion
     }
 }

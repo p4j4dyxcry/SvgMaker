@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 
-namespace SvgMakerCore.Wpf
+namespace SvgMakerCore.Utility
 {
     public static class VisualTreeUtil
     {

@@ -1,6 +1,6 @@
 ﻿using System.Windows;
+using SvgMakerCore.Core;
 using SvgMakerCore.Geometry2D;
-using SvgMakerCore.Wpf;
 
 namespace SvgMakerCore
 {

@@ -2,7 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using SvgMakerCore.Wpf;
+using SvgMakerCore.Utility;
 
 namespace SvgMakerCore.Controls
 {

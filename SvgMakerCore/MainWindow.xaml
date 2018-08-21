@@ -36,14 +36,19 @@
 
                 <Grid>
                     <controls:GridRenderer 
-                        GridInterval="{Binding GridSize}" 
+                        Background="Black"
+                        Width="{Binding CanvasWidth}"
+                        Height="{Binding CanvasHeight}"
+                        GridInterval="{Binding GridSize}"
                         IsDash="{Binding IsDash}" 
                         IsDrawGrid="True" 
                         DashA="{Binding DashLineSize}"
                         DashB="{Binding DashWhiteSpaceSize}"
                         GridBrush="YellowGreen"/>
 
-                    <controls:GeometryCanvas ItemsSource="{Binding ItemsSource}"/>
+                    <controls:GeometryCanvas
+                        ItemsSource="{Binding ItemsSource}"/>
+
                 </Grid>
             </Border>
         </ScrollViewer>
@@ -56,20 +61,25 @@
                 <StackPanel>
                     <WrapPanel Margin="2" HorizontalAlignment="Right">
                         <TextBlock Text="幅" VerticalAlignment="Center"    Margin="0,0,4,0"/>
-                        <TextBox Text="{Binding DumyWidth}" Width="40"     Margin="0,0,4,0"/>
+                        <TextBox Text="{Binding DumyWidth ,Mode=TwoWay}" Width="40"     Margin="0,0,4,0"/>
                         <TextBlock Text="高さ" VerticalAlignment="Center"  Margin="0,0,4,0"/>
-                        <TextBox Text="{Binding DumyHeight}" Width="40"    Margin="0,0,4,0"/>
+                        <TextBox Text="{Binding DumyHeight,Mode=TwoWay}" Width="40"    Margin="0,0,4,0"/>
                         <Button Command="{Binding ResizeCommand}" Content="適用"/>
                     </WrapPanel>
                     <TextBlock Text="拡縮"/>
-                    <Slider Minimum="1" Maximum="10" Value="{Binding Scale}" Style="{StaticResource RightControlStyle}"/>
+                    <Slider  Minimum="1" Maximum="10" Value="{Binding Scale}" Style="{StaticResource RightControlStyle}"/>
                 </StackPanel>
             </GroupBox>
 
             <GroupBox Header="グリッドサイズ">
                 <StackPanel>
                     <TextBox Text="{Binding GridSize , UpdateSourceTrigger=PropertyChanged }" Style="{StaticResource RightControlStyle}"/>
-                    <Slider Minimum="5" Maximum="50" Value="{Binding GridSize}" Style="{StaticResource RightControlStyle}"/>
+                    <Slider 
+                        IsSnapToTickEnabled ="True"
+                        TickFrequency="2"
+                        SmallChange="2"
+                        LargeChange="10"
+                        Interval="2" Minimum="8" Maximum="128" Value="{Binding GridSize}" Style="{StaticResource RightControlStyle}"/>
                 </StackPanel>
             </GroupBox>
 
@@ -88,9 +98,9 @@
             <StackPanel Orientation="Horizontal">
                 <Button Content="Undo" Command="{Binding UndoCommand}"/>
                 <Button Content="Redo" Command="{Binding RedoCommand}"/>
-                <Button Content="Execute" Command="{Binding ExecuteCommand}"/>
+                <Button Content="Merge" Command="{Binding MergeCommand}"/>
             </StackPanel>
-            <ListView ItemsSource="{Binding OperationManager}" 
+            <ListView ItemsSource="{Binding Operations}" 
                       MaxHeight="512"
                       ScrollViewer.VerticalScrollBarVisibility ="Auto"
                       ScrollViewer.HorizontalScrollBarVisibility ="Auto">

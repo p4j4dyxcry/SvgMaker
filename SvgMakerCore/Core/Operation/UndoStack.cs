@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace SvgMakerCore.Wpf
+namespace SvgMakerCore.Core.Operation
 {
     public class UndoStack<T> : IEnumerable<T>
     {

@@ -31,6 +31,7 @@ namespace SvgMakerCore.Controls
 
         public IList SelectedItems => GeometryControl.SelectedItems;
 
+        private int _zIndex = 0;
         public GeometryCanvas()
         {
             ItemsPanel = new ItemsPanelTemplate(new FrameworkElementFactory(typeof(Canvas)));
@@ -45,9 +46,14 @@ namespace SvgMakerCore.Controls
                     i.IsSelected = false;
 
                 var target = listBoxItems
-                    .FirstOrDefault(x => VisualTreeHelper.HitTest(x, Mouse.GetPosition(x)) != null);
+                    .Where(x => VisualTreeHelper.HitTest(x, Mouse.GetPosition(x)) != null)
+                    .OrderByDescending(Panel.GetZIndex)
+                    .FirstOrDefault();
                 if (target != null)
+                {
                     target.IsSelected = true;
+                    Panel.SetZIndex(target, _zIndex++);
+                }
             };
         }
 

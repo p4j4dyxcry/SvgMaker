@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using System.Windows.Media;
-using SvgMakerCore.Wpf;
+using SvgMakerCore.Core;
 
 namespace SvgMakerCore
 {

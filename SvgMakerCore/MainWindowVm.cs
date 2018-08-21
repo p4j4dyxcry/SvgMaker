@@ -1,42 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
+using SvgMakerCore.Core;
+using SvgMakerCore.Core.Operation;
 using SvgMakerCore.Geometry2D;
-using SvgMakerCore.Wpf;
+using SvgMakerCore.Utility;
 
 namespace SvgMakerCore
 {
-    public class MainWindowVm : NotifyPropertyChanger
+    public class MainWindowVm : Operatable
     {
-        private void SetPropertyEx<T>(
-            Action<T> setter, 
-            T oldValue, 
-            T newValue,
-            [CallerMemberName] string propertyName = "")
-        {
-            if (Equals(oldValue,newValue) is false)
-            {
-                var command = new PropertyChangeOperation<T>(
-                    (x)=>
-                    {
-                        setter.Invoke(x);
-                        OnPropertyChanged(propertyName);
-                    },newValue,oldValue,propertyName);
-                command.Permission = TimeSpan.FromSeconds(1);
-                command.MergeAndExecute(_operationManager);
-            }
-        }
-
         private double _scale = 1.0d;
 
         public double Scale
         {
             get => _scale;
-            set => SetPropertyEx((x) => _scale=x , _scale, value);
+            set => SetPropertyEx(ref _scale, value);
         }
 
         private bool _isDash;
@@ -44,15 +25,15 @@ namespace SvgMakerCore
         public bool IsDash
         {
             get => _isDash;
-            set => SetPropertyEx((x) => _isDash = x, _isDash, value);
+            set => SetPropertyEx(ref _isDash, value);
         }
 
         private double _gridSize = 50;
 
         public double GridSize
         {
-            get => Math.Max(_gridSize,5);
-            set => SetPropertyEx((x) => _gridSize = x, _gridSize, value);
+            get => _gridSize;
+            set => SetPropertyEx(ref _gridSize, value);
         }
 
         private double _dashLineSize = 4;
@@ -60,7 +41,7 @@ namespace SvgMakerCore
         public double DashLineSize
         {
             get => _dashLineSize;
-            set => SetPropertyEx((x) => _dashLineSize = x, _dashLineSize, value);
+            set => SetPropertyEx(ref _dashLineSize, value);
         }
 
         private double _dashWhiteSpaceSize = 4;
@@ -68,7 +49,7 @@ namespace SvgMakerCore
         public double DashWhiteSpaceSize
         {
             get => _dashWhiteSpaceSize;
-            set => SetPropertyEx((x) => _dashWhiteSpaceSize = x, _dashWhiteSpaceSize, value);
+            set => SetPropertyEx(ref _dashWhiteSpaceSize, value);
         }
 
         private double _canvasWidth = 512;
@@ -76,7 +57,7 @@ namespace SvgMakerCore
         public double CanvasWidth
         {
             get => _canvasWidth;
-            set => SetPropertyEx((x) => _canvasWidth = x, _canvasWidth, value);
+            set => SetProperty(ref _canvasWidth, value);
         }
 
         private double _canvasHeight = 512;
@@ -84,7 +65,7 @@ namespace SvgMakerCore
         public double CanvasHeight
         {
             get => _canvasHeight;
-            set => SetPropertyEx((x) => _canvasHeight = x, _canvasHeight, value);
+            set => SetProperty(ref _canvasHeight, value);
         }
 
         private double _dumyWidth = 512;
@@ -103,11 +84,22 @@ namespace SvgMakerCore
             set => SetProperty(ref _dumyHeight, value);
         }
 
-        public ICommand ResizeCommand => new DelegateCommnd(() =>
+        public ICommand ResizeCommand
         {
-            CanvasWidth = DumyWidth;
-            CanvasHeight = DumyHeight;
-        });
+            get
+            {
+                return new DelegateCommnd(() =>
+                {
+                    var operation = new CompositeOperation(
+                        new PropertyChangeOperation<double>(d => CanvasWidth = d, DumyWidth, CanvasWidth),
+                        new PropertyChangeOperation<double>(d => CanvasHeight = d, DumyHeight, CanvasHeight));
+                    OperationManager.Execute(operation);
+                });
+
+            }
+        } 
+
+        public AsyncProperty<int> A { get; }
 
         public ObservableCollection<Geometry2DVm> ItemsSource { get; set; } = new ObservableCollection<Geometry2DVm>();
 
@@ -116,11 +108,9 @@ namespace SvgMakerCore
             var factory = new GeometryFactory();
             ItemsSource.Add(new Geometry2DVm(factory.Create(e)));
         });
-        private readonly OperationManager _operationManager;
+        public IOperation[] Operations => OperationManager.ToArray();
 
-        public IOperation[] OperationManager => _operationManager.ToArray();
-
-        public MainWindowVm()
+        public MainWindowVm():base(new OperationManager(1024))
         {
             {
                 AddGeometryCommand.Execute(new AddGeometryEventArg()
@@ -190,25 +180,42 @@ namespace SvgMakerCore
                 });
             }
             
-            _operationManager = new OperationManager(1024);
-            _operationManager.PropertyChanged += (s, e) =>
+            OperationManager.PropertyChanged += (s, e) =>
             {
-                if (e.PropertyName == nameof(_operationManager.CanUndo))
+                if (e.PropertyName == nameof(OperationManager.CanUndo))
                     OnPropertyChanged(nameof(UndoCommand));
-                if (e.PropertyName == nameof(_operationManager.CanRedo))
+                if (e.PropertyName == nameof(OperationManager.CanRedo))
                     OnPropertyChanged(nameof(RedoCommand));
                 if (e.PropertyName == nameof(OperationManager))
-                    OnPropertyChanged(nameof(OperationManager));
+                    OnPropertyChanged(nameof(Operations));
             };
+            A =new AsyncProperty<int>(() => 1,()=>OnPropertyChanged("A.Value"));
+
+            Console.WriteLine(A.Value);
         }
 
 
         public ICommand UndoCommand => new DelegateCommnd(
-            () => _operationManager.Undo(),
-            () => _operationManager.CanUndo);
+            () => OperationManager.Undo(),
+            () => OperationManager.CanUndo);
 
         public ICommand RedoCommand => new DelegateCommnd(
-            () => _operationManager.Redo(),
-            () => _operationManager.CanRedo);
+            () => OperationManager.Redo(),
+            () => OperationManager.CanRedo);
+
+        public ICommand MergeCommand => new DelegateCommnd(
+            () =>
+            {
+                if (!OperationManager.CanUndo)
+                    return;
+                if (!(OperationManager.Peek() is IPropertyChangeOperation propertyChangedOperation))
+                    return;
+
+                if (propertyChangedOperation.MergeJudger is KeyOperationMergeJudger<string> stringKeyOperationMergeJudger)
+                    stringKeyOperationMergeJudger.Permission = TimeSpan.MaxValue;
+                propertyChangedOperation.Merge(OperationManager);
+                OperationManager.Execute(propertyChangedOperation);
+                OnPropertyChanged(nameof(Operations));
+            });
     }
 }
