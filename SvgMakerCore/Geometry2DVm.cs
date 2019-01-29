@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Windows.Media;
 using SvgMakerCore.Core;
+using SvgMakerCore.Core.Operation;
 
 namespace SvgMakerCore
 {
@@ -12,11 +13,11 @@ namespace SvgMakerCore
 
         public Point2DVm[] Points { get; }
 
-        public Geometry2DVm( Geometry2D.Geometry2D model)
+        public Geometry2DVm( Geometry2D.Geometry2D model , OperationManager operationManager)
         {
             Model = model;
             var o = Model.Origin;
-            Points = Model.Select(x => new Point2DVm(x)).ToArray();
+            Points = Model.Select(x => new Point2DVm(x,operationManager)).ToArray();
 
             for (var iterator = 0; iterator < Points.Length ; ++iterator)
             {

@@ -3,12 +3,12 @@ using System.Diagnostics;
 
 namespace SvgMakerCore.Core.Operation
 {
-    public class DelegeteOperation : IOperation
+    public class DelegateOperation : IOperation
     {
         private readonly Action _execute;
         private readonly Action _rollback;
 
-        public DelegeteOperation( Action execute , Action rollback)
+        public DelegateOperation( Action execute , Action rollback)
         {
             Debug.Assert(execute != null);
             Debug.Assert(rollback != null);

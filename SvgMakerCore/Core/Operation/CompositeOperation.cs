@@ -5,7 +5,7 @@ namespace SvgMakerCore.Core.Operation
 {
     public class CompositeOperation : IOperation
     {
-        private readonly List<IOperation> _operations ;
+        private readonly IList<IOperation> _operations ;
 
         public CompositeOperation(params IOperation[] operations)
         {
@@ -15,7 +15,8 @@ namespace SvgMakerCore.Core.Operation
 
         public void Add(params IOperation[] operations)
         {
-            _operations.AddRange(operations);
+            foreach (var operation in operations)
+                _operations.Add(operation);
         }
 
         public void Execute()
@@ -26,8 +27,16 @@ namespace SvgMakerCore.Core.Operation
 
         public void Rollback()
         {
-            foreach (var operation in _operations.ToArray().Reverse())
+            foreach (var operation in _operations.Reverse())
                 operation.Rollback();
+        }
+    }
+
+    public static class CompositeOperationExtensions
+    {
+        public static IOperation ToCompositeOperation(this IEnumerable<IOperation> operations)
+        {
+            return new CompositeOperation(operations.ToArray());
         }
     }
 }

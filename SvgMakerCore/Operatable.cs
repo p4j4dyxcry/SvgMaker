@@ -1,5 +1,7 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using SvgMakerCore.Core;
 using SvgMakerCore.Core.Operation;
@@ -39,12 +41,12 @@ namespace SvgMakerCore
                     OnPropertyChanged(propertyName);
                 }
 
-                var mergeInfo = new KeyOperationMergeJudger<string>(propertyName)
+                var mergeInfo = new KeyOperationMergeJudge<string>(propertyName)
                 {
                     Permission = TimeSpan.FromSeconds(1)
                 };
 
-                var operation = new PropertyChangeOperation<T>(
+                var operation = new MergeableOperation<T>(
                     SetAndPropertyChangedInvoke,
                     newValue,
                     oldValue,
@@ -57,6 +59,24 @@ namespace SvgMakerCore
         public Operatable(OperationManager operationManager)
         {
             OperationManager = operationManager;
+        }
+    }
+
+
+    public static class MergeableOperationExtensions
+    {
+        public static IOperation ToMergeableOperation<T, TProperty>(this T _this, Expression<Func<T, TProperty>> selector, TProperty newValue) where T : NotifyPropertyChanger
+        {
+            var propertyName = selector.GetMemberName();
+            var oldValue = (TProperty)FastReflection.GetProperty(_this, propertyName);
+
+            return new MergeableOperation<TProperty>(x =>
+                {
+                    FastReflection.SetProperty(_this, propertyName, x);
+                    _this.OnPropertyChanged(propertyName);
+                },
+                newValue,
+                oldValue, new KeyOperationMergeJudge<string>($"{_this.GetHashCode()}.{propertyName}"));
         }
     }
 }

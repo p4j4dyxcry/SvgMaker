@@ -1,30 +1,33 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Linq.Expressions;
+using SvgMakerCore.Core.Reflection;
 
 namespace SvgMakerCore.Core.Operation
 {
-    public interface IPropertyChangeOperation : IOperation
+    public interface IMergeableOperation : IOperation
     {
-        IOperationMergeJudger MergeJudger { get;set; }
+        IOperationMergeJudge MergeJudge { get;set; }
         IOperation Merge(OperationManager operationManager);
     }
 
-    public class PropertyChangeOperation<T> : IPropertyChangeOperation
+    public class MergeableOperation<T> : IMergeableOperation
     {
         private T PrevProperty { get; set; }
         private T Property { get; }
         private Action<T> Setter { get; }
-        public IOperationMergeJudger MergeJudger { get; set; }
+        public IOperationMergeJudge MergeJudge { get; set; }
 
-        public PropertyChangeOperation(
+        public MergeableOperation(
             Action<T> setter,
             T newValue,
             T oldValue,
-            IOperationMergeJudger operationMergeJudger = null)
+            IOperationMergeJudge operationMergeJudge = null)
         {
             Setter = setter;
             PrevProperty = oldValue;
             Property = newValue;
-            MergeJudger = operationMergeJudger;
+            MergeJudge = operationMergeJudge;
         }
 
         public void Execute()
@@ -49,7 +52,7 @@ namespace SvgMakerCore.Core.Operation
         }
         /// <summary>
         /// OperationManagerのUndoStackとマージします。
-        /// 統合されたOperationはUndosStackから除外されます。
+        /// 統合されたOperationはUndoStackから除外されます。
         /// Operationが統合された場合OperationManagerのRedoStackはクリアされます。
         /// </summary>
         /// <param name="operationManager"></param>
@@ -59,24 +62,24 @@ namespace SvgMakerCore.Core.Operation
             if (operationManager.CanUndo is false)
                 return this;
 
-            if (MergeJudger is null)
+            if (MergeJudge is null)
                 return this;
 
             var topCommand = operationManager.Peek();
             var prevValue = PrevProperty;
-            var mergeInfo = MergeJudger;
-            while (topCommand is PropertyChangeOperation<T> propertyChangeOperation)
+            var mergeInfo = MergeJudge;
+            while (topCommand is MergeableOperation<T> propertyChangeOperation)
             {
-                if (MergeJudger.CanMerge(propertyChangeOperation.MergeJudger) is false)
+                if (MergeJudge.CanMerge(propertyChangeOperation.MergeJudge) is false)
                     break;
-                mergeInfo = propertyChangeOperation.MergeJudger;
+                mergeInfo = propertyChangeOperation.MergeJudge;
                 prevValue = propertyChangeOperation.PrevProperty;
                 operationManager.Pop();
                 topCommand = operationManager.Peek();
             }
 
             PrevProperty = prevValue;
-            MergeJudger = mergeInfo;
+            MergeJudge = mergeInfo;
             return this;
         }
 

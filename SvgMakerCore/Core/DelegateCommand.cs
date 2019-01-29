@@ -3,7 +3,7 @@ using System.Windows.Input;
 
 namespace SvgMakerCore.Core.Operation
 {
-    public class DelegateCommnd : ICommand
+    public class DelegateCommand : ICommand
     {        
         public bool CanExecute(object parameter)
             => CanExecuteFunc?.Invoke() ?? true;
@@ -16,18 +16,18 @@ namespace SvgMakerCore.Core.Operation
         private Action Action { get; }
 
 
-        public DelegateCommnd(Action action)
+        public DelegateCommand(Action action)
             => Action = action;
 
         private Func<bool> CanExecuteFunc { get; }
-        public DelegateCommnd(Action action,Func<bool> canExecute):this(action)
+        public DelegateCommand(Action action,Func<bool> canExecute):this(action)
             => CanExecuteFunc = canExecute;
 
         public void OnCanExecuteChanged()
             => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    public class DelegateCommnd<T> : ICommand 
+    public class DelegateCommand<T> : ICommand 
     {
         public bool CanExecute(object parameter)
             => CanExecuteFunc?.Invoke((T)parameter) ?? true;
@@ -39,11 +39,11 @@ namespace SvgMakerCore.Core.Operation
 
         private Action<T> Action { get; }
 
-        public DelegateCommnd(Action<T> action)
+        public DelegateCommand(Action<T> action)
             => Action = action;
 
         private Func<T, bool> CanExecuteFunc { get; }
-        public DelegateCommnd(Action<T> action, Func<T,bool> canExecute) : this(action)
+        public DelegateCommand(Action<T> action, Func<T,bool> canExecute) : this(action)
             => CanExecuteFunc = canExecute;
 
         public void OnCanExecuteChanged()

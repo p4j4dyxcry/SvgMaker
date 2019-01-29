@@ -36,15 +36,6 @@ namespace SvgMakerCore.Core.Operation
             OnStackChanged();
         }
 
-        public IOperation Push(IOperation operation)
-        {
-            Debug.Assert(operation != null);
-            PreStackChanged();
-            _undoStack.Push(operation).Execute();
-            OnStackChanged();
-            return operation;
-        }
-
         public IOperation Peek()
         {
             return _undoStack.Peek();
@@ -58,9 +49,13 @@ namespace SvgMakerCore.Core.Operation
             return result;
         }
 
-        public void Execute(IOperation operation)
+        public IOperation Execute(IOperation operation)
         {
-            Push(operation).Execute();
+            Debug.Assert(operation != null);
+            PreStackChanged();
+            _undoStack.Push(operation).Execute();
+            OnStackChanged();
+            return operation;
         }
 
         #region Enumrable

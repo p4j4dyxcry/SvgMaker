@@ -1,12 +1,13 @@
 ﻿namespace SvgMakerCore.Core.Operation
 {
-    public interface IOperationMergeJudger
+    public interface IOperationMergeJudge
+
     {
         /// <summary>
         /// マージ可能か判断します。
         /// </summary>
         /// <param name="operation"></param>
         /// <returns></returns>
-        bool CanMerge(IOperationMergeJudger operation);
+        bool CanMerge(IOperationMergeJudge operation);
     }
 }

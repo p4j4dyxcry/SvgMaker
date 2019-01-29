@@ -10,12 +10,12 @@ namespace SvgMakerCore.Utility
     {
         public static void Execute(this OperationManager manager, Action execute, Action rollback)
         {
-            manager.Execute(new DelegeteOperation(execute, rollback));
+            manager.Execute(new DelegateOperation(execute, rollback));
         }
 
         public static ICommand ToCommand(this IOperation operation, OperationManager manager)
         {
-            return new DelegateCommnd(()=>manager.Execute(operation));
+            return new DelegateCommand(()=>manager.Execute(operation));
         }
     }
 }

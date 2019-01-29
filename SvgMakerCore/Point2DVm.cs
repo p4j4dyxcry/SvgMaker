@@ -1,5 +1,7 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using SvgMakerCore.Core;
+using SvgMakerCore.Core.Operation;
 using SvgMakerCore.Geometry2D;
 
 namespace SvgMakerCore
@@ -15,10 +17,7 @@ namespace SvgMakerCore
             set
             {
                 if (Geometry2D.Utility.Tolerance(_model.X, value))
-                {
-                    _model.X = value;
-                    OnPropertyChanged();
-                }
+                    SetPosition(value, _model.Y);
             }
         }
 
@@ -28,16 +27,35 @@ namespace SvgMakerCore
             set
             {
                 if (Geometry2D.Utility.Tolerance(_model.Y, value))
-                {
-                    _model.Y = value;
-                    OnPropertyChanged();
-                }
+                    SetPosition(_model.X, value);
             }
         }
 
-        public Point2DVm(Point model)
+        void SetPosition(double x, double y)
+        {
+            void SetAndPropertyChangedInvoke(Point property)
+            {
+                _model.X = property.X;
+                _model.Y = property.Y;
+                OnPropertyChanged(nameof(X));
+                OnPropertyChanged(nameof(Y));
+            }
+
+            var operation = new MergeableOperation<Point>(
+                SetAndPropertyChangedInvoke,
+                new Point(x,y),
+                new Point(_model.X,_model.Y),
+                new KeyOperationMergeJudge<string>($"{GetHashCode().ToString()}.X,Y"));
+
+            operation.MergeAndExecute(_operationManager);
+        }
+
+        private readonly OperationManager _operationManager;
+
+        public Point2DVm(Point model , OperationManager operationManager)
         {
             _model = model;
+            _operationManager = operationManager;
         }
 
     }

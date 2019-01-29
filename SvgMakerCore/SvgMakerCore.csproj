@@ -55,6 +55,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Aabb2D.cs" />
+    <Compile Include="AppState.cs" />
     <Compile Include="Controls\AabbDrawer.cs" />
     <Compile Include="Controls\GeometryCanvas.cs" />
     <Compile Include="Controls\GeometryItem.cs" />
@@ -64,6 +65,7 @@
     <Compile Include="Core\AsyncProperty.cs" />
     <Compile Include="Core\Ipc\IpcClient.cs" />
     <Compile Include="Core\Ipc\IpcServer.cs" />
+    <Compile Include="Core\Operation\ListOperation.cs" />
     <Compile Include="Core\Reflection\FastReflection.cs" />
     <Compile Include="Core\Reflection\PropertyAccesser.cs" />
     <Compile Include="Core\Ipc\RemoteEvent.cs" />
@@ -82,15 +84,15 @@
     <Compile Include="MainWindowVm.cs" />
     <Compile Include="Operatable.cs" />
     <Compile Include="Point2DVm.cs" />
-    <Compile Include="Core\Operation\KeyOperationMergeJudger.cs" />
-    <Compile Include="Core\Operation\IOperationMergeJudger.cs" />
-    <Compile Include="Core\Operation\PropertyChangeOperation.cs" />
+    <Compile Include="Core\Operation\KeyOperationMergeJudge.cs" />
+    <Compile Include="Core\Operation\IOperationMergeJudge.cs" />
+    <Compile Include="Core\Operation\MergeableOperation.cs" />
     <Compile Include="SvgSaver.cs" />
     <Compile Include="User.cs" />
     <Compile Include="Utility\OperationEx.cs" />
-    <Compile Include="Core\Operation\DelegateCommnd.cs" />
+    <Compile Include="Core\DelegateCommand.cs" />
     <Compile Include="Core\Operation\CapacityStack.cs" />
-    <Compile Include="Core\Operation\DelegeteOperation.cs" />
+    <Compile Include="Core\Operation\DelegateOperation.cs" />
     <Compile Include="Core\Operation\CompositeOperation.cs" />
     <Compile Include="Core\Operation\IOperation.cs" />
     <Compile Include="Core\Operation\OperationManager.cs" />

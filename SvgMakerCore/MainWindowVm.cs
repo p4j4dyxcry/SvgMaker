@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
@@ -88,14 +89,13 @@ namespace SvgMakerCore
         {
             get
             {
-                return new DelegateCommnd(() =>
+                return new DelegateCommand(() =>
                 {
                     var operation = new CompositeOperation(
-                        new PropertyChangeOperation<double>(d => CanvasWidth = d, DumyWidth, CanvasWidth),
-                        new PropertyChangeOperation<double>(d => CanvasHeight = d, DumyHeight, CanvasHeight));
+                        new MergeableOperation<double>(d => CanvasWidth = d, DumyWidth, CanvasWidth),
+                        new MergeableOperation<double>(d => CanvasHeight = d, DumyHeight, CanvasHeight));
                     OperationManager.Execute(operation);
                 });
-
             }
         } 
 
@@ -103,15 +103,46 @@ namespace SvgMakerCore
 
         public ObservableCollection<Geometry2DVm> ItemsSource { get; set; } = new ObservableCollection<Geometry2DVm>();
 
-        public ICommand AddGeometryCommand => new DelegateCommnd<AddGeometryEventArg>((e) =>
+        public ICommand AddGeometryCommand => new DelegateCommand<AddGeometryEventArg>((e) =>
         {
             var factory = new GeometryFactory();
-            ItemsSource.Add(new Geometry2DVm(factory.Create(e)));
+            ItemsSource.Add(new Geometry2DVm(factory.Create(e),OperationManager));
         });
         public IOperation[] Operations => OperationManager.ToArray();
 
+        public void test()
+        {
+            ObservableCollection<int> data = new ObservableCollection<int>();
+
+            OperationManager.Execute(new InsertOperation<int>(data, 1));
+            OperationManager.Execute(new InsertOperation<int>(data, 1));
+            OperationManager.Execute(new RemoveOperation<int>(data, 1));
+            OperationManager.Execute(new RemoveAtOperation(data, 0));
+            OperationManager.Execute(new ClearOperation<int>(data));
+
+            OperationManager.Execute(data.ToAddRangeOperation(1,2,3,4,5));
+            OperationManager.Execute(data.ToRemoveRangeOperation(1, 3, 5));
+
+
+            OperationManager.Undo();
+            OperationManager.Undo();
+            OperationManager.Undo();
+            OperationManager.Undo();
+            OperationManager.Undo();
+            OperationManager.Undo();
+
+            OperationManager.Execute(data.ToAddRangeOperation(new List<int>(){1,1,1,3,5}));
+            OperationManager.Execute(data.ToRemoveRangeOperation(1, 3, 5));
+            OperationManager.Execute(data.ToRemoveRangeOperation(2,4));
+
+            OperationManager.Undo();
+            OperationManager.Undo();
+            OperationManager.Undo();
+        }
+
         public MainWindowVm():base(new OperationManager(1024))
         {
+            test();
             {
                 AddGeometryCommand.Execute(new AddGeometryEventArg()
                 {
@@ -189,29 +220,26 @@ namespace SvgMakerCore
                 if (e.PropertyName == nameof(OperationManager))
                     OnPropertyChanged(nameof(Operations));
             };
-            A =new AsyncProperty<int>(() => 1,()=>OnPropertyChanged("A.Value"));
-
-            Console.WriteLine(A.Value);
         }
 
 
-        public ICommand UndoCommand => new DelegateCommnd(
+        public ICommand UndoCommand => new DelegateCommand(
             () => OperationManager.Undo(),
             () => OperationManager.CanUndo);
 
-        public ICommand RedoCommand => new DelegateCommnd(
+        public ICommand RedoCommand => new DelegateCommand(
             () => OperationManager.Redo(),
             () => OperationManager.CanRedo);
 
-        public ICommand MergeCommand => new DelegateCommnd(
+        public ICommand MergeCommand => new DelegateCommand(
             () =>
             {
                 if (!OperationManager.CanUndo)
                     return;
-                if (!(OperationManager.Peek() is IPropertyChangeOperation propertyChangedOperation))
+                if (!(OperationManager.Peek() is IMergeableOperation propertyChangedOperation))
                     return;
 
-                if (propertyChangedOperation.MergeJudger is KeyOperationMergeJudger<string> stringKeyOperationMergeJudger)
+                if (propertyChangedOperation.MergeJudge is KeyOperationMergeJudge<string> stringKeyOperationMergeJudger)
                     stringKeyOperationMergeJudger.Permission = TimeSpan.MaxValue;
                 propertyChangedOperation.Merge(OperationManager);
                 OperationManager.Execute(propertyChangedOperation);

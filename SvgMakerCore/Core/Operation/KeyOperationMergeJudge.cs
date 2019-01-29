@@ -6,7 +6,7 @@ namespace SvgMakerCore.Core.Operation
     /// <summary>
     /// 識別子とタイムスタンプからマージ可能か判断する
     /// </summary>
-    public class KeyOperationMergeJudger<T> : IOperationMergeJudger
+    public class KeyOperationMergeJudge<T> : IOperationMergeJudge
     {
         public T Key { get; }
 
@@ -14,9 +14,9 @@ namespace SvgMakerCore.Core.Operation
 
         private DateTime TimeStamp { get; } = DateTime.Now;
 
-        public bool CanMerge(IOperationMergeJudger operationMergeJudger)
+        public bool CanMerge(IOperationMergeJudge operationMergeJudge)
         {
-            if (operationMergeJudger is KeyOperationMergeJudger<T> timeStampMergeInfo)
+            if (operationMergeJudge is KeyOperationMergeJudge<T> timeStampMergeInfo)
             {
                 return Equals(Key, timeStampMergeInfo.Key) &&
                        TimeStamp - timeStampMergeInfo.TimeStamp < Permission;
@@ -24,7 +24,7 @@ namespace SvgMakerCore.Core.Operation
             return false;
         }
 
-        public KeyOperationMergeJudger(T key)
+        public KeyOperationMergeJudge(T key)
         {
             Key = key;
         }
