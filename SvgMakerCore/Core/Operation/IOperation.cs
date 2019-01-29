@@ -1,4 +1,7 @@
-﻿namespace SvgMakerCore.Core.Operation
+﻿using System.Collections.Generic;
+using System.Windows.Input;
+
+namespace SvgMakerCore.Core.Operation
 {
     public interface IOperation
     {
@@ -12,6 +15,11 @@
         {
             manager.Execute(_this);
             return _this;
+        }
+
+        public static IEnumerable<IOperation> ToEnumerable(this IOperation _this)
+        {
+            yield return _this;
         }
     }
 }
