@@ -92,10 +92,8 @@ namespace SvgMakerCore
                 return new DelegateCommand(() =>
                 {
                     this.ToMergeableOperation(x => x.CanvasWidth, DumyWidth)
-                        .ToEnumerable()
-                        .Concat(this.ToMergeableOperation(x => x.CanvasHeight, DumyHeight).ToEnumerable())
-                        .ToCompositeOperation()
-                        .ExecuteToManager(OperationManager);
+                        .Union(this.ToMergeableOperation(x => x.CanvasHeight, DumyHeight))
+                        .ExecuteFromManager(OperationManager);
                 });
 
             }
@@ -110,7 +108,7 @@ namespace SvgMakerCore
         {
             ItemsSource
                 .ToAddOperation(new Geometry2DVm(new GeometryFactory().Create(e), OperationManager))
-                .ExecuteToManager(OperationManager);
+                .ExecuteFromManager(OperationManager);
         });
         public IOperation[] Operations => OperationManager.ToArray();
 

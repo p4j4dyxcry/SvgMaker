@@ -66,6 +66,7 @@
     <Compile Include="Core\Ipc\IpcClient.cs" />
     <Compile Include="Core\Ipc\IpcServer.cs" />
     <Compile Include="Core\Operation\ListOperation.cs" />
+    <Compile Include="Core\Operation\OperationExtensions.cs" />
     <Compile Include="Core\Reflection\FastReflection.cs" />
     <Compile Include="Core\Reflection\PropertyAccesser.cs" />
     <Compile Include="Core\Ipc\RemoteEvent.cs" />

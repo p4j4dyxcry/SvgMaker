@@ -31,12 +31,4 @@ namespace SvgMakerCore.Core.Operation
                 operation.Rollback();
         }
     }
-
-    public static class CompositeOperationExtensions
-    {
-        public static IOperation ToCompositeOperation(this IEnumerable<IOperation> operations)
-        {
-            return new CompositeOperation(operations.ToArray());
-        }
-    }
 }

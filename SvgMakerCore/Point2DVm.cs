@@ -1,15 +1,22 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using SvgMakerCore.Core;
 using SvgMakerCore.Core.Operation;
-using SvgMakerCore.Geometry2D;
 
 namespace SvgMakerCore
 {
     public class Point2DVm : NotifyPropertyChanger , IPoint2D
     {
         private Point _model;
-        public Point Model => _model;
+
+        public Point Model
+        {
+            get => _model;
+            set
+            {
+                _model.X = value.X;
+                _model.Y = value.Y;
+            }
+        } 
 
         public double X
         {
@@ -33,21 +40,10 @@ namespace SvgMakerCore
 
         void SetPosition(double x, double y)
         {
-            void SetAndPropertyChangedInvoke(Point property)
-            {
-                _model.X = property.X;
-                _model.Y = property.Y;
-                OnPropertyChanged(nameof(X));
-                OnPropertyChanged(nameof(Y));
-            }
-
-            var operation = new MergeableOperation<Point>(
-                SetAndPropertyChangedInvoke,
-                new Point(x,y),
-                new Point(_model.X,_model.Y),
-                new KeyOperationMergeJudge<string>($"{GetHashCode().ToString()}.X,Y"));
-
-            operation.MergeAndExecute(_operationManager);
+            this.GenerateSetOperation(_ => _.Model, new Point(x, y))
+                .AddPostAction(() => OnPropertyChanged(nameof(X)))
+                .AddPostAction(() => OnPropertyChanged(nameof(Y)))
+                .ExecuteFromManager(_operationManager);
         }
 
         private readonly OperationManager _operationManager;

@@ -28,5 +28,10 @@ namespace SvgMakerCore.Core.Operation
         {
             Key = key;
         }
+
+        public override string ToString()
+        {
+            return Key.ToString();
+        }
     }
 }

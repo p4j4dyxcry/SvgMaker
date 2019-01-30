@@ -1,7 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
-using System.Linq.Expressions;
-using SvgMakerCore.Core.Reflection;
 
 namespace SvgMakerCore.Core.Operation
 {
@@ -11,13 +8,21 @@ namespace SvgMakerCore.Core.Operation
         IOperation Merge(OperationManager operationManager);
     }
 
-    public class MergeableOperation<T> : IMergeableOperation
+    internal interface ICustomTriggerOperation 
+    {
+        event Action OnExecuted;
+        event Action OnPreviewExecuted;
+    }
+    public class MergeableOperation<T> : IMergeableOperation , ICustomTriggerOperation
     {
         private T PrevProperty { get; set; }
         private T Property { get; }
         private Action<T> Setter { get; }
         public IOperationMergeJudge MergeJudge { get; set; }
 
+        public event Action OnExecuted;
+        public event Action OnPreviewExecuted;
+        
         public MergeableOperation(
             Action<T> setter,
             T newValue,
@@ -32,12 +37,16 @@ namespace SvgMakerCore.Core.Operation
 
         public void Execute()
         {
+            OnPreviewExecuted?.Invoke();
             Setter.Invoke(Property);
+            OnExecuted?.Invoke();
         }
 
         public void Rollback()
         {
+            OnPreviewExecuted?.Invoke();
             Setter.Invoke(PrevProperty);
+            OnExecuted?.Invoke();
         }
 
         /// <summary>
@@ -85,8 +94,9 @@ namespace SvgMakerCore.Core.Operation
 
         public override string ToString()
         {
-            return $"Value = {Property,0:.00}\n" +
-                   $"Prev  = {PrevProperty,0:.00}";
+            return $"Key        = {MergeJudge}\n" +
+                   $"New  Value = {Property,0:.00}\n" +
+                   $"Prev Value = {PrevProperty,0:.00}";
         }
     }
 }

@@ -148,39 +148,4 @@ namespace SvgMakerCore.Core.Operation
                 get_list().Add(data);
         }
     }
-
-    public static class ListOperationExtensions
-    {
-        public static IOperation ToAddOperation<T>(this IList<T> _this, T value)
-            => new InsertOperation<T>(_this,value);
-
-        public static IOperation ToRemoveOperation<T>(this IList<T> _this, T value)
-            => new RemoveOperation<T>(_this, value);
-
-        public static IOperation ToRemoveAtOperation(this IList _this, int index)
-            => new RemoveAtOperation(_this, index);
-
-        public static IOperation ToAddRangeOperation<T>(this IList<T> _this, params T[] values)
-            => ToAddRangeOperation(_this, values as IEnumerable<T>);
-
-        public static IOperation ToAddRangeOperation<T>(this IList<T> _this, IEnumerable<T> values)
-        {
-            return values
-                .Select(x => new InsertOperation<T>(_this, x))
-                .ToCompositeOperation();
-        }
-
-        public static IOperation ToRemoveRangeOperation<T>(this IList<T> _this, params T[] values)
-            => ToRemoveRangeOperation(_this, values as IEnumerable<T>);
- 
-        public static IOperation ToRemoveRangeOperation<T>(this IList<T> _this, IEnumerable<T> values)
-        {
-            return values
-                .Select(x => new RemoveOperation<T>(_this, x))
-                .ToCompositeOperation();
-        }
-
-        public static IOperation ToClearOperation<T>(this IList<T> _this)
-            => new ClearOperation<T>(_this);
-    }
 }

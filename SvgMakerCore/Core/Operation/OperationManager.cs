@@ -100,8 +100,6 @@ namespace SvgMakerCore.Core.Operation
 
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(OperationManager)));
         }
-
-
         #endregion
     }
 }
