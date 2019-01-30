@@ -1,11 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 
 namespace SvgMakerCore.Core.Operation
 {
-    public class OperationManager : INotifyPropertyChanged , IEnumerable<IOperation>
+    public class OperationManager :  IEnumerable<IOperation>
     {
         private readonly UndoStack<IOperation> _undoStack;
         public bool CanUndo => _undoStack.CanUndo;
@@ -74,31 +74,21 @@ namespace SvgMakerCore.Core.Operation
 
         #region PropertyChanged
 
-        private bool _prevCanRedo;
-        private bool _prevCanUndo;
         private int _preStackChangedCall;
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event Action<object,EventArgs> StackChanged;
 
         private void PreStackChanged()
         {
             Debug.Assert(_preStackChangedCall == 0 , "不正な呼び出し" );
             _preStackChangedCall++;
-            _prevCanRedo = CanRedo;
-            _prevCanUndo = CanUndo;
         }
 
         private void OnStackChanged()
         {
             Debug.Assert(_preStackChangedCall == 1, "不正な呼び出し");
             _preStackChangedCall--;
-            if (_prevCanUndo != CanUndo)
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CanUndo)));
-
-            if (_prevCanRedo != CanRedo)
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CanRedo)));
-
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(OperationManager)));
+            StackChanged?.Invoke(this, new EventArgs());
         }
         #endregion
     }
