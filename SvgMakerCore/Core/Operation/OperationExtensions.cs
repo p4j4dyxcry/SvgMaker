@@ -23,17 +23,23 @@ namespace SvgMakerCore.Core.Operation
                 yield return operation;
         }
 
+        public static IOperation GenerateSetOperation<T, TProperty>(this T _this, string propertyName, TProperty newValue)
+        {
+            var oldValue = (TProperty)FastReflection.GetProperty(_this, propertyName);
+            
+            return GenerateAutoMergeOperation(_this, propertyName, newValue, oldValue, $"{_this.GetHashCode()}.{propertyName}");
+        }
+
         public static IOperation GenerateSetOperation<T, TProperty>(this T _this, Expression<Func<T, TProperty>> selector, TProperty newValue)
         {
-            return GenerateAutoMergeOperation(_this, selector, newValue, $"{_this.GetHashCode()}.{selector.GetMemberName()}");
+            var propertyName = selector.GetMemberName();
+            
+            return GenerateSetOperation(_this, propertyName, newValue);
         }
 
         public static IOperation GenerateAutoMergeOperation<T, TProperty,TMergeKey>
-            (this T _this, Expression<Func<T, TProperty>> selector, TProperty newValue , TMergeKey mergeKey)
+            (this T _this,string propertyName, TProperty newValue ,TProperty oldValue, TMergeKey mergeKey)
         {
-            var propertyName = selector.GetMemberName();
-            var oldValue = (TProperty)FastReflection.GetProperty(_this, propertyName);
-
             return new MergeableOperation<TProperty>(
                 x => { FastReflection.SetProperty(_this, propertyName, x); },
                 newValue,

@@ -33,26 +33,10 @@ namespace SvgMakerCore
                 SetProperty(ref oldValue, newValue, propertyName);
             else if (Equals(oldValue, newValue) is false)
             {
-                void SetAndPropertyChangedInvoke(T property)
-                {
-                    BeginOperation();
-                    FastReflection.SetProperty(this, propertyName, property);
-                    EndOperation();
-                    OnPropertyChanged(propertyName);
-                }
-
-                var mergeInfo = new KeyOperationMergeJudge<string>(propertyName)
-                {
-                    Permission = TimeSpan.FromSeconds(1)
-                };
-
-                var operation = new MergeableOperation<T>(
-                    SetAndPropertyChangedInvoke,
-                    newValue,
-                    oldValue,
-                    mergeInfo);
-
-                operation.MergeAndExecute(OperationManager);
+                this.ToPropertyChangedOperation(newValue,propertyName)
+                    .AddPreAction(BeginOperation)
+                    .AddPostAction(EndOperation)
+                    .ExecuteFromManager(OperationManager);
             }
         }
 
@@ -65,18 +49,10 @@ namespace SvgMakerCore
 
     public static class MergeableOperationExtensions
     {
-        public static IOperation ToMergeableOperation<T, TProperty>(this T _this, Expression<Func<T, TProperty>> selector, TProperty newValue) where T : NotifyPropertyChanger
+        public static IOperation ToPropertyChangedOperation<T, TProperty>(this T _this, TProperty newValue , [CallerMemberName] string propertyName = "") where T : NotifyPropertyChanger
         {
-            var propertyName = selector.GetMemberName();
-            var oldValue = (TProperty)FastReflection.GetProperty(_this, propertyName);
-
-            return new MergeableOperation<TProperty>(x =>
-                {
-                    FastReflection.SetProperty(_this, propertyName, x);
-                    _this.OnPropertyChanged(propertyName);
-                },
-                newValue,
-                oldValue, new KeyOperationMergeJudge<string>($"{_this.GetHashCode()}.{propertyName}"));
+            return _this.GenerateSetOperation(propertyName, newValue)
+                .AddPostAction(() => _this.OnPropertyChanged(propertyName));
         }
     }
 }

@@ -91,8 +91,8 @@ namespace SvgMakerCore
             {
                 return new DelegateCommand(() =>
                 {
-                    this.ToMergeableOperation(x => x.CanvasWidth, DumyWidth)
-                        .Union(this.ToMergeableOperation(x => x.CanvasHeight, DumyHeight))
+                    this.ToPropertyChangedOperation(DumyWidth,nameof(CanvasWidth))
+                        .Union(this.ToPropertyChangedOperation(DumyHeight, nameof(CanvasHeight)))
                         .ExecuteFromManager(OperationManager);
                 });
 
@@ -116,6 +116,7 @@ namespace SvgMakerCore
         {
             ObservableCollection<int> data = new ObservableCollection<int>();
 
+            data.ToAddOperation(1).ExecuteFromManager(OperationManager);
             OperationManager.Execute(new InsertOperation<int>(data, 1));
             OperationManager.Execute(new InsertOperation<int>(data, 1));
             OperationManager.Execute(new RemoveOperation<int>(data, 1));
@@ -213,14 +214,11 @@ namespace SvgMakerCore
                 });
             }
             
-            OperationManager.PropertyChanged += (s, e) =>
+            OperationManager.StackChanged += (s, e) =>
             {
-                if (e.PropertyName == nameof(OperationManager.CanUndo))
-                    OnPropertyChanged(nameof(UndoCommand));
-                if (e.PropertyName == nameof(OperationManager.CanRedo))
-                    OnPropertyChanged(nameof(RedoCommand));
-                if (e.PropertyName == nameof(OperationManager))
-                    OnPropertyChanged(nameof(Operations));
+                OnPropertyChanged(nameof(UndoCommand));
+                OnPropertyChanged(nameof(RedoCommand));
+                OnPropertyChanged(nameof(Operations));
             };
         }
 
