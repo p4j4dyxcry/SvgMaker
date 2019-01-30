@@ -1,17 +1,33 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace SvgMakerCore.Core.Operation
 {
-    public class OperationManager :  IEnumerable<IOperation>
+    public interface IOperationController
+    {
+        bool CanUndo { get; }
+        bool CanRedo { get; }
+
+        void Undo();
+        void Redo();
+
+        IOperation Peek();
+        IOperation Pop();
+        IOperation Execute(IOperation operation);
+
+        IEnumerable<IOperation> Operations { get; }
+
+        event Action<object, EventArgs> StackChanged;
+    }
+
+    public class OperationController : IOperationController 
     {
         private readonly UndoStack<IOperation> _undoStack;
         public bool CanUndo => _undoStack.CanUndo;
         public bool CanRedo => _undoStack.CanRedo;
 
-        public OperationManager(int capacity)
+        public OperationController(int capacity)
         {
             _undoStack = new UndoStack<IOperation>(capacity);
         }
@@ -32,7 +48,7 @@ namespace SvgMakerCore.Core.Operation
                 return;
 
             PreStackChanged();
-            _undoStack.Redo().Execute();
+            _undoStack.Redo().RollForward();
             OnStackChanged();
         }
 
@@ -53,24 +69,10 @@ namespace SvgMakerCore.Core.Operation
         {
             Debug.Assert(operation != null);
             PreStackChanged();
-            _undoStack.Push(operation).Execute();
+            _undoStack.Push(operation).RollForward();
             OnStackChanged();
             return operation;
         }
-
-        #region Enumrable
-
-        public IEnumerator<IOperation> GetEnumerator()
-        {
-            return _undoStack.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
-
-        #endregion
 
         #region PropertyChanged
 
@@ -91,5 +93,7 @@ namespace SvgMakerCore.Core.Operation
             StackChanged?.Invoke(this, new EventArgs());
         }
         #endregion
+
+        public IEnumerable<IOperation> Operations => _undoStack;
     }
 }

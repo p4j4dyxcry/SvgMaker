@@ -1,17 +1,13 @@
-﻿using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq.Expressions;
+﻿using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using SvgMakerCore.Core;
 using SvgMakerCore.Core.Operation;
-using SvgMakerCore.Core.Reflection;
 
 namespace SvgMakerCore
 {
     public class Operatable : NotifyPropertyChanger
     {
-        protected OperationManager OperationManager { get; }
+        protected IOperationController OperationController { get; }
 
         private bool _isPropertyChanging;
 
@@ -36,13 +32,13 @@ namespace SvgMakerCore
                 this.ToPropertyChangedOperation(newValue,propertyName)
                     .AddPreAction(BeginOperation)
                     .AddPostAction(EndOperation)
-                    .ExecuteFromManager(OperationManager);
+                    .Execute(OperationController);
             }
         }
 
-        public Operatable(OperationManager operationManager)
+        public Operatable(IOperationController operationController)
         {
-            OperationManager = operationManager;
+            OperationController = operationController;
         }
     }
 

@@ -27,7 +27,7 @@ namespace SvgMakerCore.Core.Operation
             _property = insertValue;
         }
 
-        public void Execute()
+        public void RollForward()
         {
             get_list().Add(_property);
         }
@@ -62,7 +62,7 @@ namespace SvgMakerCore.Core.Operation
             _property = removeValue;
         }
 
-        public void Execute()
+        public void RollForward()
         {
             _insertIndex = get_list().IndexOf(_property);
 
@@ -103,7 +103,7 @@ namespace SvgMakerCore.Core.Operation
             _index = index;
         }
 
-        public void Execute()
+        public void RollForward()
         {
             var list = get_list();
             _data = list[_index];
@@ -136,7 +136,7 @@ namespace SvgMakerCore.Core.Operation
             _list = list;
         }
 
-        public void Execute()
+        public void RollForward()
         {
             _prevData = get_list().ToArray();
             get_list().Clear();

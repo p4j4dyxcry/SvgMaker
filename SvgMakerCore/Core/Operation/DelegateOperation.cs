@@ -16,7 +16,7 @@ namespace SvgMakerCore.Core.Operation
             _rollback = rollback;            
         }
 
-        public void Execute()
+        public void RollForward()
         {
             _execute.Invoke();
         }

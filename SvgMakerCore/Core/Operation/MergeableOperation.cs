@@ -5,10 +5,10 @@ namespace SvgMakerCore.Core.Operation
     public interface IMergeableOperation : IOperation
     {
         IOperationMergeJudge MergeJudge { get;set; }
-        IOperation Merge(OperationManager operationManager);
+        IOperation Merge(IOperationController operationController);
     }
 
-    internal interface ICustomTriggerOperation 
+    internal interface ICustomTriggerOperation : IOperation
     {
         event Action OnExecuted;
         event Action OnPreviewExecuted;
@@ -35,7 +35,7 @@ namespace SvgMakerCore.Core.Operation
             MergeJudge = operationMergeJudge;
         }
 
-        public void Execute()
+        public void RollForward()
         {
             OnPreviewExecuted?.Invoke();
             Setter.Invoke(Property);
@@ -50,31 +50,21 @@ namespace SvgMakerCore.Core.Operation
         }
 
         /// <summary>
-        /// OperationManagerのUndoStackを考慮し、
-        /// 重複するOperationだった場合はマージしてからOperationを実行します。
-        /// </summary>
-        /// <param name="operationManager"></param>
-        public void MergeAndExecute(OperationManager operationManager)
-        {
-            var mergedOperation = Merge(operationManager);
-            operationManager.Execute(mergedOperation);
-        }
-        /// <summary>
         /// OperationManagerのUndoStackとマージします。
         /// 統合されたOperationはUndoStackから除外されます。
         /// Operationが統合された場合OperationManagerのRedoStackはクリアされます。
         /// </summary>
-        /// <param name="operationManager"></param>
+        /// <param name="operationController"></param>
         /// <returns></returns>
-        public IOperation Merge(OperationManager operationManager)
+        public IOperation Merge(IOperationController operationController)
         {
-            if (operationManager.CanUndo is false)
+            if (operationController.CanUndo is false)
                 return this;
 
             if (MergeJudge is null)
                 return this;
 
-            var topCommand = operationManager.Peek();
+            var topCommand = operationController.Peek();
             var prevValue = PrevProperty;
             var mergeInfo = MergeJudge;
             while (topCommand is MergeableOperation<T> propertyChangeOperation)
@@ -83,8 +73,8 @@ namespace SvgMakerCore.Core.Operation
                     break;
                 mergeInfo = propertyChangeOperation.MergeJudge;
                 prevValue = propertyChangeOperation.PrevProperty;
-                operationManager.Pop();
-                topCommand = operationManager.Peek();
+                operationController.Pop();
+                topCommand = operationController.Peek();
             }
 
             PrevProperty = prevValue;

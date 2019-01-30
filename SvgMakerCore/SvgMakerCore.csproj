@@ -96,7 +96,7 @@
     <Compile Include="Core\Operation\DelegateOperation.cs" />
     <Compile Include="Core\Operation\CompositeOperation.cs" />
     <Compile Include="Core\Operation\IOperation.cs" />
-    <Compile Include="Core\Operation\OperationManager.cs" />
+    <Compile Include="Core\Operation\OperationController.cs" />
     <Compile Include="Core\NotifyPropertyChanger.cs" />
     <Compile Include="Core\Operation\UndoStack.cs" />
     <Compile Include="Utility\VisualTreeUtil.cs" />

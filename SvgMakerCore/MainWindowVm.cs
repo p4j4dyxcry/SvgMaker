@@ -7,7 +7,6 @@ using System.Windows.Input;
 using SvgMakerCore.Core;
 using SvgMakerCore.Core.Operation;
 using SvgMakerCore.Geometry2D;
-using SvgMakerCore.Utility;
 
 namespace SvgMakerCore
 {
@@ -93,7 +92,7 @@ namespace SvgMakerCore
                 {
                     this.ToPropertyChangedOperation(DumyWidth,nameof(CanvasWidth))
                         .Union(this.ToPropertyChangedOperation(DumyHeight, nameof(CanvasHeight)))
-                        .ExecuteFromManager(OperationManager);
+                        .Execute(OperationController);
                 });
 
             }
@@ -107,43 +106,43 @@ namespace SvgMakerCore
         public ICommand AddGeometryCommand => new DelegateCommand<AddGeometryEventArg>((e) =>
         {
             ItemsSource
-                .ToAddOperation(new Geometry2DVm(new GeometryFactory().Create(e), OperationManager))
-                .ExecuteFromManager(OperationManager);
+                .ToAddOperation(new Geometry2DVm(new GeometryFactory().Create(e), OperationController))
+                .Execute(OperationController);
         });
-        public IOperation[] Operations => OperationManager.ToArray();
+        public IOperation[] Operations => OperationController.Operations.ToArray();
 
         public void test()
         {
             ObservableCollection<int> data = new ObservableCollection<int>();
 
-            data.ToAddOperation(1).ExecuteFromManager(OperationManager);
-            OperationManager.Execute(new InsertOperation<int>(data, 1));
-            OperationManager.Execute(new InsertOperation<int>(data, 1));
-            OperationManager.Execute(new RemoveOperation<int>(data, 1));
-            OperationManager.Execute(new RemoveAtOperation(data, 0));
-            OperationManager.Execute(new ClearOperation<int>(data));
+            data.ToAddOperation(1).Execute(OperationController);
+            OperationController.Execute(new InsertOperation<int>(data, 1));
+            OperationController.Execute(new InsertOperation<int>(data, 1));
+            OperationController.Execute(new RemoveOperation<int>(data, 1));
+            OperationController.Execute(new RemoveAtOperation(data, 0));
+            OperationController.Execute(new ClearOperation<int>(data));
 
-            OperationManager.Execute(data.ToAddRangeOperation(1,2,3,4,5));
-            OperationManager.Execute(data.ToRemoveRangeOperation(1, 3, 5));
+            OperationController.Execute(data.ToAddRangeOperation(1,2,3,4,5));
+            OperationController.Execute(data.ToRemoveRangeOperation(1, 3, 5));
 
 
-            OperationManager.Undo();
-            OperationManager.Undo();
-            OperationManager.Undo();
-            OperationManager.Undo();
-            OperationManager.Undo();
-            OperationManager.Undo();
+            OperationController.Undo();
+            OperationController.Undo();
+            OperationController.Undo();
+            OperationController.Undo();
+            OperationController.Undo();
+            OperationController.Undo();
 
-            OperationManager.Execute(data.ToAddRangeOperation(new List<int>(){1,1,1,3,5}));
-            OperationManager.Execute(data.ToRemoveRangeOperation(1, 3, 5));
-            OperationManager.Execute(data.ToRemoveRangeOperation(2,4));
+            OperationController.Execute(data.ToAddRangeOperation(new List<int>(){1,1,1,3,5}));
+            OperationController.Execute(data.ToRemoveRangeOperation(1, 3, 5));
+            OperationController.Execute(data.ToRemoveRangeOperation(2,4));
 
-            OperationManager.Undo();
-            OperationManager.Undo();
-            OperationManager.Undo();
+            OperationController.Undo();
+            OperationController.Undo();
+            OperationController.Undo();
         }
 
-        public MainWindowVm():base(new OperationManager(1024))
+        public MainWindowVm():base(new OperationController(1024))
         {
             test();
             {
@@ -214,7 +213,7 @@ namespace SvgMakerCore
                 });
             }
             
-            OperationManager.StackChanged += (s, e) =>
+            OperationController.StackChanged += (s, e) =>
             {
                 OnPropertyChanged(nameof(UndoCommand));
                 OnPropertyChanged(nameof(RedoCommand));
@@ -224,25 +223,25 @@ namespace SvgMakerCore
 
 
         public ICommand UndoCommand => new DelegateCommand(
-            () => OperationManager.Undo(),
-            () => OperationManager.CanUndo);
+            () => OperationController.Undo(),
+            () => OperationController.CanUndo);
 
         public ICommand RedoCommand => new DelegateCommand(
-            () => OperationManager.Redo(),
-            () => OperationManager.CanRedo);
+            () => OperationController.Redo(),
+            () => OperationController.CanRedo);
 
         public ICommand MergeCommand => new DelegateCommand(
             () =>
             {
-                if (!OperationManager.CanUndo)
+                if (!OperationController.CanUndo)
                     return;
-                if (!(OperationManager.Peek() is IMergeableOperation propertyChangedOperation))
+                if (!(OperationController.Peek() is IMergeableOperation propertyChangedOperation))
                     return;
 
                 if (propertyChangedOperation.MergeJudge is KeyOperationMergeJudge<string> stringKeyOperationMergeJudger)
                     stringKeyOperationMergeJudger.Permission = TimeSpan.MaxValue;
-                propertyChangedOperation.Merge(OperationManager);
-                OperationManager.Execute(propertyChangedOperation);
+                propertyChangedOperation.Merge(OperationController);
+                OperationController.Execute(propertyChangedOperation);
                 OnPropertyChanged(nameof(Operations));
             });
     }

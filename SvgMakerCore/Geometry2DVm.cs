@@ -13,11 +13,11 @@ namespace SvgMakerCore
 
         public Point2DVm[] Points { get; }
 
-        public Geometry2DVm( Geometry2D.Geometry2D model , OperationManager operationManager)
+        public Geometry2DVm( Geometry2D.Geometry2D model , IOperationController operationController)
         {
             Model = model;
             var o = Model.Origin;
-            Points = Model.Select(x => new Point2DVm(x,operationManager)).ToArray();
+            Points = Model.Select(x => new Point2DVm(x,operationController)).ToArray();
 
             for (var iterator = 0; iterator < Points.Length ; ++iterator)
             {

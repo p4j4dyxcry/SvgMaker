@@ -19,10 +19,10 @@ namespace SvgMakerCore.Core.Operation
                 _operations.Add(operation);
         }
 
-        public void Execute()
+        public void RollForward()
         {
             foreach (var operation in _operations)
-                operation.Execute();
+                operation.RollForward();
         }
 
         public void Rollback()

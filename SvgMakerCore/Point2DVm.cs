@@ -43,15 +43,15 @@ namespace SvgMakerCore
             this.GenerateSetOperation(_ => _.Model, new Point(x, y))
                 .AddPostAction(() => OnPropertyChanged(nameof(X)))
                 .AddPostAction(() => OnPropertyChanged(nameof(Y)))
-                .ExecuteFromManager(_operationManager);
+                .Execute(_operationController);
         }
 
-        private readonly OperationManager _operationManager;
+        private readonly IOperationController _operationController;
 
-        public Point2DVm(Point model , OperationManager operationManager)
+        public Point2DVm(Point model , IOperationController operationController)
         {
             _model = model;
-            _operationManager = operationManager;
+            _operationController = operationController;
         }
 
     }

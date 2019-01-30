@@ -9,11 +9,11 @@ namespace SvgMakerCore.Core.Operation
 {
     public static class OperationExtensions
     {
-        public static IOperation ExecuteFromManager(this IOperation _this, OperationManager manager)
+        public static IOperation Execute(this IOperation _this, IOperationController controller)
         {
             if (_this is IMergeableOperation mergeableOperation)
-                _this = mergeableOperation.Merge(manager);
-            return manager.Execute(_this);
+                _this = mergeableOperation.Merge(controller);
+            return controller.Execute(_this);
         }
 
         public static IEnumerable<IOperation> CombineOperations(this IOperation _this, params IOperation[] subOperations)
@@ -57,7 +57,7 @@ namespace SvgMakerCore.Core.Operation
             return new DelegateOperation(
                 () =>
                 {
-                    _this.Execute();
+                    _this.RollForward();
                     action.Invoke();
                 },
                 () =>
@@ -79,7 +79,7 @@ namespace SvgMakerCore.Core.Operation
                 () =>
                 {
                     action.Invoke();
-                    _this.Execute();
+                    _this.RollForward();
                 },
                 () =>
                 {
@@ -142,5 +142,4 @@ namespace SvgMakerCore.Core.Operation
             return Union(_this, operations.ToArray());
         }
     }
-
 }
