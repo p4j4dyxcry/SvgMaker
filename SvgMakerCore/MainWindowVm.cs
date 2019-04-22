@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using SvgMakerCore.Controls;
 using SvgMakerCore.Core;
 using SvgMakerCore.Core.Operation;
 using SvgMakerCore.Geometry2D;
@@ -99,8 +100,6 @@ namespace SvgMakerCore
         }
 
 
-        public AsyncProperty<int> A { get; }
-
         public ObservableCollection<Geometry2DVm> ItemsSource { get; set; } = new ObservableCollection<Geometry2DVm>();
 
         public ICommand AddGeometryCommand => new DelegateCommand<AddGeometryEventArg>((e) =>
@@ -109,42 +108,21 @@ namespace SvgMakerCore
                 .ToAddOperation(new Geometry2DVm(new GeometryFactory().Create(e), OperationController))
                 .Execute(OperationController);
         });
-        public IOperation[] Operations => OperationController.Operations.ToArray();
 
-        public void test()
+        public ICommand ClickCommand => new DelegateCommand<ClickEventArgs>((e) =>
         {
-            ObservableCollection<int> data = new ObservableCollection<int>();
+            AddGeometryCommand.Execute(new AddGeometryEventArg()
+            {
+                Type = GeometryType.Circle,
+                Points = new [] {e.Position,new Point( e.Position.X + 50 , e.Position.Y + 50),  }
+            });
 
-            data.ToAddOperation(1).Execute(OperationController);
-            OperationController.Execute(new InsertOperation<int>(data, 1));
-            OperationController.Execute(new InsertOperation<int>(data, 1));
-            OperationController.Execute(new RemoveOperation<int>(data, 1));
-            OperationController.Execute(new RemoveAtOperation(data, 0));
-            OperationController.Execute(new ClearOperation<int>(data));
+        });
 
-            OperationController.Execute(data.ToAddRangeOperation(1,2,3,4,5));
-            OperationController.Execute(data.ToRemoveRangeOperation(1, 3, 5));
-
-
-            OperationController.Undo();
-            OperationController.Undo();
-            OperationController.Undo();
-            OperationController.Undo();
-            OperationController.Undo();
-            OperationController.Undo();
-
-            OperationController.Execute(data.ToAddRangeOperation(new List<int>(){1,1,1,3,5}));
-            OperationController.Execute(data.ToRemoveRangeOperation(1, 3, 5));
-            OperationController.Execute(data.ToRemoveRangeOperation(2,4));
-
-            OperationController.Undo();
-            OperationController.Undo();
-            OperationController.Undo();
-        }
+        public IOperation[] Operations => OperationController.Operations.ToArray();
 
         public MainWindowVm():base(new OperationController(1024))
         {
-            test();
             {
                 AddGeometryCommand.Execute(new AddGeometryEventArg()
                 {

@@ -1,7 +1,7 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+﻿<ResourceDictionary xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="clr-namespace:SvgMakerCore.Controls"
-                    xmlns:svgMakerCore="clr-namespace:SvgMakerCore">
+                    xmlns:svgMakerCore="clr-namespace:SvgMakerCore"
+                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
 
     <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
@@ -10,13 +10,11 @@
             <Setter.Value>
                 <DataTemplate DataType="{x:Type Point}">
                     <controls:MoveablePoint Foreground="Red"
-                                            GridSnap="{Binding DataContext.GridSize, RelativeSource={RelativeSource FindAncestor, AncestorType=Window}}"
+                                            GridSnap="{Binding GridSize, RelativeSource={RelativeSource FindAncestor, AncestorType=controls:GeometryCanvas}}"
                                             Maximum="512,512"
                                             Minimum="0,0"
                                             Size="8"
-                                            Visibility="{Binding IsSelected , 
-                                                                 Converter={StaticResource BooleanToVisibilityConverter},
-                                                                 RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}"
+                                            Visibility="{Binding IsSelected, Converter={StaticResource BooleanToVisibilityConverter}, RelativeSource={RelativeSource FindAncestor, AncestorType=ListBoxItem}}"
                                             X="{Binding X, Mode=TwoWay}"
                                             Y="{Binding Y, Mode=TwoWay}" />
                 </DataTemplate>
@@ -48,11 +46,11 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:GeometryItem}">
                     <Grid>
-                        <controls:AabbDrawer x:Name="PART_SelectionBorder" 
-                                             BorderBrush="Transparent" 
-                                             BorderThickness="4" 
-                                             Points="{Binding Model}"/>
-                        <ContentPresenter x:Name="PART_ContentPresneter"/>
+                        <controls:AabbDrawer x:Name="PART_SelectionBorder"
+                                             BorderBrush="Transparent"
+                                             BorderThickness="4"
+                                             Points="{Binding Model}" />
+                        <ContentPresenter x:Name="PART_ContentPresneter" />
                     </Grid>
 
                     <ControlTemplate.Triggers>
@@ -66,6 +64,7 @@
     </Style>
 
     <Style TargetType="{x:Type controls:GeometryCanvas}">
+        <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ItemsControl}">
@@ -76,6 +75,14 @@
                                                   ItemTemplateSelector="{TemplateBinding ItemTemplateSelector}"
                                                   ItemsSource="{TemplateBinding ItemsSource}"
                                                   Style="{StaticResource GeometryControlStyle}" />
+                        <Border x:Name="PART_MouseOverPoint" IsHitTestVisible="False">
+                            <Ellipse Width="24"
+                                     HorizontalAlignment="Left"
+                                     VerticalAlignment="Top"
+                                     Height="24"
+                                     Opacity="0.7"
+                                     Fill="GreenYellow" />
+                        </Border>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>

@@ -61,7 +61,6 @@
     <Compile Include="Controls\GeometryItem.cs" />
     <Compile Include="Controls\ISelectable.cs" />
     <Compile Include="Controls\MoveablePoint.cs" />
-    <Compile Include="Controls\PointsDrawer.cs" />
     <Compile Include="Core\AsyncProperty.cs" />
     <Compile Include="Core\Ipc\IpcClient.cs" />
     <Compile Include="Core\Ipc\IpcServer.cs" />

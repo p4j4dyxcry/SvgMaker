@@ -27,7 +27,7 @@
             <ColumnDefinition Width="200"/>
         </Grid.ColumnDefinitions>
         <ScrollViewer 
-            Grid.Column="0"
+            Grid.Column="0"            
             HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
             <Border BorderThickness="1" BorderBrush="Black" Width="{Binding CanvasWidth}" Height="{Binding CanvasHeight}" >
                 <Border.LayoutTransform>
@@ -39,14 +39,16 @@
                         Background="Black"
                         Width="{Binding CanvasWidth}"
                         Height="{Binding CanvasHeight}"
-                        GridInterval="{Binding GridSize}"
+                        GridInterval="{Binding GridSize}"                        
                         IsDash="{Binding IsDash}" 
                         IsDrawGrid="True" 
                         DashA="{Binding DashLineSize}"
                         DashB="{Binding DashWhiteSpaceSize}"
-                        GridBrush="YellowGreen"/>
+                        GridBrush="LightGray"/>
 
                     <controls:GeometryCanvas
+                        ClickCommand="{Binding ClickCommand}"
+                        GridSize="{Binding GridSize}"
                         ItemsSource="{Binding ItemsSource}"/>
 
                 </Grid>

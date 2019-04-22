@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace SvgMakerCore.Core.Operation
+namespace OperationSystem.Operation
 {
     public interface IMergeableOperation : IOperation
     {
-        IOperationMergeJudge MergeJudge { get;}
+        IOperationMergeJudge MergeJudge { get; }
         IOperation Merge(IOperationController operationController);
     }
 

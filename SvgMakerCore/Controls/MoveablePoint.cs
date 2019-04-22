@@ -80,7 +80,7 @@ namespace SvgMakerCore.Controls
 
         protected override void OnRender(DrawingContext drawingContext)
         {
-            drawingContext.PushOpacity(0.125);
+            drawingContext.PushOpacity(0.5);
             drawingContext.DrawEllipse(Foreground,null,new Point(X,Y),Size,Size);
         }
 

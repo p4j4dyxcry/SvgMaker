@@ -53,7 +53,10 @@ namespace SvgMakerCore.Controls
         private Pen _pen;
         private void MakePen()
         {
-            _pen = new Pen(BorderBrush,BorderThickness.Left).DoFreeze();
+            _pen = new Pen(BorderBrush,BorderThickness.Left)
+            {
+                DashStyle = new DashStyle( new List<double>(){0,2}, 0)
+            }.DoFreeze();
         }
 
         protected override void OnRender(DrawingContext drawingContext)
