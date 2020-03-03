@@ -6,4 +6,4 @@ Practice of tool development with WPF + MVVM.
 
 No further updates. Thank you.
 
-![](screenshot/svg-maker.gif)
+![](https://github.com/p4j4dyxcry/SvgMaker/blob/master/ScreenShot/svg-maker.gif)
