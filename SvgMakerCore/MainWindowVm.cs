@@ -116,7 +116,6 @@ namespace SvgMakerCore
                 Type = GeometryType.Circle,
                 Points = new [] {e.Position,new Point( e.Position.X + 50 , e.Position.Y + 50),  }
             });
-
         });
 
         public IOperation[] Operations => OperationController.Operations.ToArray();
